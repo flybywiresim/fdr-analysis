@@ -2,21 +2,27 @@
 
 The FlyByWire autoflight system has a built-in data collection to help with development, debugging and user support.
 
-The idea is taken from real aircraft and their flight data recorder and also helps to analyse issues and performance of the simulated aircraft. 
+The idea is taken from real aircraft and their flight data recorder and helps to analyze issues and performance of the simulated aircraft. 
 
-To see which data is collected see `data_fields.txt` in the docs folder. 
+To see which data is collected see `data_fields.txt` in the `docs` folder. 
 
-To see how to configure the data collection see this solder on the main a32nx repository. 
+To learn how to configure the data collection see this folder on the main a32nx repository:
 https://github.com/flybywiresim/a32nx/tree/master/docs/Configuration
 
-# FDR Files in WORK Folder 
+# FDR Files in WORK Folder
 
-Microsoft Store Version
+FDR data files are stored in the aircraft's work folder. 
+
+## Microsoft Store Version
+
 The work folder can be found here:
+
 `%LOCALAPPDATA%\Packages\Microsoft.FlightSimulator_8wekyb3d8bbwe\LocalState\packages\flybywire-aircraft-a320-neo\work\`
 
-Steam Version
+## Steam Version
+
 The work folder can be found here:
+
 `%APPDATA%\Microsoft Flight Simulator\Packages\flybywire-aircraft-a320-neo\work\`
 
 FDR files are basically log files of a lot of parameters of the sim and the aircraft (ap/a-thr/fbw) in a special compressed format.
@@ -26,7 +32,6 @@ Every time the users starts a new flight a new file is created. For very long fl
 Example file name: 2021-11-15-12-57-13.fdr
 
 # Create an Analysis Chart From the Data
-================
 
 Test FDR file: 2021-11-15-12-57-13.fdr
 
