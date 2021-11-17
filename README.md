@@ -9,17 +9,26 @@ To see which data is collected see `data_fields.txt` in the `docs` folder.
 To learn how to configure the data collection see this folder on the main a32nx repository:
 https://github.com/flybywiresim/a32nx/tree/master/docs/Configuration
 
-# FDR Files in WORK Folder
+## Folders
+
+`/docs`: Documentation
+`/fdr2csv`: Converter tool from *.fdr files to *.csv in various versions
+`/python`: Base scripts and development and debugging
+`/support`: Scripts targeted mainly for support staff for user support. 
+
+## Usage
+
+## FDR Files in WORK Folder
 
 FDR data files are stored in the aircraft's work folder. 
 
-## Microsoft Store Version
+### Microsoft Store Version
 
 The work folder can be found here:
 
 `%LOCALAPPDATA%\Packages\Microsoft.FlightSimulator_8wekyb3d8bbwe\LocalState\packages\flybywire-aircraft-a320-neo\work\`
 
-## Steam Version
+### Steam Version
 
 The work folder can be found here:
 
@@ -31,7 +40,7 @@ Every time the users starts a new flight a new file is created. For very long fl
 
 Example file name: 2021-11-15-12-57-13.fdr
 
-# Create an Analysis Chart From the Data
+### Create an Analysis Chart From the Data
 
 Test FDR file: 2021-11-15-12-57-13.fdr
 
@@ -44,6 +53,8 @@ Test FDR file: 2021-11-15-12-57-13.fdr
 2. Create a graph:
 
 	fdr_scriptname.py -f .\2021-11-15-12-57-13.csv	
+
+## Example 
 
 See example.png for an explanation of a Autopilot Disconnect Analysis Chart.
 
