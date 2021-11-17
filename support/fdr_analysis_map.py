@@ -31,7 +31,7 @@ def draw_graph(fdr):
     gmapOne = gmplot.GoogleMapPlotter(lat_samples[1], lon_samples[1], 6)
     gmapOne.scatter(lat_samples, lon_samples, '#ff0000', size=50, marker=False)
     gmapOne.plot(lat_samples, lon_samples, 'blue', edge_width=2.5)
-    gmapOne.draw("build/map.html")
+    gmapOne.draw("map.html")
 
 
 if __name__ == "__main__":

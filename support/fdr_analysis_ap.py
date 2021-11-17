@@ -102,10 +102,10 @@ def draw_graph(fdr):
     i += 1
     # configure distances
     figure.subplots_adjust(
-        left=0.05,
-        bottom=0.05,
+        left=0.03,
+        bottom=0.02,
         right=0.98,
-        top=0.98,
+        top=0.95,
         wspace=0,
         hspace=0.2
     )
