@@ -11,10 +11,10 @@ https://github.com/flybywiresim/a32nx/tree/master/docs/Configuration
 
 ## Folders
 
-`/docs`: Documentation
-`/fdr2csv`: Converter tool from *.fdr files to *.csv in various versions
-`/python`: Base scripts and development and debugging
-`/support`: Scripts targeted mainly for support staff for user support. 
+- `/docs`: Documentation
+- `/fdr2csv`: Converter tool from *.fdr files to *.csv in various versions
+- `/python`: Base scripts and development and debugging
+- `/support`: Scripts targeted mainly for support staff for user support. 
 
 ## Usage
 
