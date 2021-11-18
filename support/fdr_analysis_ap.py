@@ -1,9 +1,9 @@
-import sys
 import argparse
-import pandas as pd
+import sys
+
 import matplotlib.pyplot as plt
 import mplcursors
-from matplotlib.widgets import Cursor
+import pandas as pd
 
 
 def main(argv):
@@ -70,7 +70,10 @@ def draw_graph(fdr):
     axes[i].plot(time, fdr['ap_sm.input.AP_1_push'], label='AP1 Push', linewidth=2.0, color="blue")
     axes[i].plot(time, fdr['ap_sm.input.AP_2_push'], label='AP2 Push', linewidth=2.0, color="green")
     axes[i].plot(time, fdr['ap_sm.input.AP_DISCONNECT_push'], label='AP Disconnect', linewidth=2.0, color="black")
-    axes[i].plot(time, fdr['fbw.sim.data_computed.alpha_floor_command'], label='A.FLOOR', linewidth=5.0, color="magenta")
+    axes[i].plot(time, fdr['fbw.sim.data_computed.high_aoa_prot_active'],
+                 label='High-AoA', linewidth=5.0, color="orange")
+    axes[i].plot(time, fdr['fbw.sim.data_computed.alpha_floor_command'],
+                 label='A.FLOOR', linewidth=5.0, color="magenta")
     axes[i].grid(False)
     axes[i].set_ylim(0, 1)
     axes[i].legend()
