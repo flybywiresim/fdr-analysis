@@ -28,6 +28,14 @@ The work folder can be found here:
 
 Test FDR file: 2021-11-15-12-57-13.fdr
 
+Preparation:
+
+- Add these files into a folder of your choice:
+  - fdr2csv_v11.exe
+  - fdr_analysis.exe 
+  - FDR file: (e.g. 2021-11-15-12-57-13.fdr)
+- Open a Terminal/Command/Powershell line and go to that folder 
+
 1. Convert the fdr file to csv
 
 	fdr2csv_v11.exe -i .\2021-11-15-12-57-13.fdr -o .\2021-11-15-12-57-13.csv 
