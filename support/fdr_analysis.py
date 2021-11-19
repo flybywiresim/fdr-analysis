@@ -106,14 +106,31 @@ def draw_ap_graph(fdr):
     # get simulation time
     time = fdr['fbw.sim.time.simulation_time']
     # create figure with subplots
-    figure, axes = plt.subplots(9, sharex=True)
+    figure, axes = plt.subplots(11, sharex=True)
     i = 0
-    # axis gs
-    axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
+    # aircraft position, speed and direction
     axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
     axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 40000)
+    axes[i].set_ylim(0, 45000)
+    axes[i].legend()
+    i += 1
+    # weights
+    axes[i].plot(time, fdr['fbw.sim.data.total_weight_kg'], label='GW', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(40000, 80000)
+    axes[i].legend()
+    i += 1
+    # temp
+    axes[i].plot(time, fdr['fbw.sim.data.ambient_wind_velocity_kn'], label='Wind kt', color="cyan")
+    axes[i].plot(time, fdr['fbw.sim.data.total_air_temperature_celsius'], label='TAT', color="red")
+    axes[i].plot(time, fdr['athr.data.ISA_degC'], label='ISA', color="blue")
+    axes[i].plot(time, fdr['athr.data.OAT_degC'], label='OAT', color="green")
+    axes[i].plot(time, fdr['fbw.sim.data.ice_structure_percent'], label='ICE', color="magenta")
+    axes[i].grid(True)
+    axes[i].set_ylim(-70, 150)
     axes[i].legend()
     i += 1
     # axis inputs
@@ -135,6 +152,13 @@ def draw_ap_graph(fdr):
     axes[i].set_ylim(-1, +1)
     axes[i].legend()
     i += 1
+    # spoilers
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(-1, 1)
+    axes[i].legend()
+    i += 1
     # axis ap on
     axes[i].plot(time, fdr['fbw.sim.data.autopilot_custom_on'], label='Autopilot On', color="blue", linewidth=1.0)
     axes[i].grid(False)
@@ -153,12 +177,6 @@ def draw_ap_graph(fdr):
     axes[i].set_ylim(0, 1)
     axes[i].legend()
     i += 1
-    # axis wind
-    axes[i].plot(time, fdr['fbw.sim.data.ambient_wind_velocity_kn'], label='Wind kt', color="cyan")
-    axes[i].grid(True)
-    axes[i].set_ylim(0, 200)
-    axes[i].legend()
-    i += 1
     # attitude
     axes[i].plot(time, fdr['fbw.sim.data.Theta_deg'], label='Pitch', color="black")
     axes[i].plot(time, fdr['fbw.sim.data.Phi_deg'], label='Roll', color="red")
@@ -167,15 +185,10 @@ def draw_ap_graph(fdr):
     axes[i].legend()
     i += 1
     # axis sim rate
-    axes[i].plot(time, fdr['fbw.sim.data.simulation_rate'], label='Sim Rate', color="red")
-    axes[i].grid(True)
-    axes[i].set_ylim(0, 16)
-    axes[i].legend()
-    i += 1
-    # axis dt
+    axes[i].plot(time, fdr['fbw.sim.data.simulation_rate'], label='Sim Rate', color="blue", linewidth=3.0)
     axes[i].plot(time, fdr['fbw.sim.data.simulation_rate'] / fdr['fbw.sim.time.dt'], label='FPS', color="red")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 60)
+    axes[i].set_ylim(0, 64)
     axes[i].legend()
     i += 1
     # configure distances
