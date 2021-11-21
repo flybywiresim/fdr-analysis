@@ -1,5 +1,6 @@
 import argparse
 import os
+import subprocess
 import sys
 from enum import Enum
 
@@ -8,18 +9,37 @@ import matplotlib.pyplot as plt
 import mplcursors
 import pandas as pd
 from past.builtins import raw_input
+import PySimpleGUI as sg
 
 
 def main(argv):
-    # initialize argument parser
+    # ###########################
+    # command line parsing
+    # ###########################
     parser = argparse.ArgumentParser(description='FDR file analysis')
     parser.add_argument(
-        '-f',
-        '--file',
+        '-fdr',
+        '--fdrfile',
         nargs=1,
-        dest='file',
-        required=True,
+        dest='fdrfile',
+        required=False,
         help='FDR file to analyze'
+    )
+    parser.add_argument(
+        '-csv',
+        '--csvfile',
+        nargs=1,
+        dest='csvfile',
+        required=False,
+        help='CSV file to analyze'
+    )
+    parser.add_argument(
+        '-exe',
+        '--exefile',
+        nargs=1,
+        dest='exefile',
+        required=False,
+        help='EXE file for fdr2csv conversion (only for ui)'
     )
     parser.add_argument(
         '-c',
@@ -29,66 +49,286 @@ def main(argv):
         required=False,
         help='FDR Chart Command (map, ap, aoa, apl, apv, athr)'
     )
+    parser.add_argument(
+        '-cl',
+        '--commandline',
+        help='Command line usage - no ui',
+        action="store_true"
+    )
     # parse arguments
     args = parser.parse_args()
-    fdr = pd.read_csv(args.file[0])
 
-    if not args.command:
-        while True:  # use while True
-            choice = menu()
-            if choice == 1:
-                print("Map")
-                draw_map_graph(fdr)
-            elif choice == 2:
-                print("AP Disconnect Chart")
-                draw_ap_graph(fdr)
-            elif choice == 3:
-                print("Angle of Attack Chart")
-                draw_aoa_graph(fdr)
-            elif choice == 4:
-                print("AP Lateral Chart")
-                draw_ap_lateral_graph(fdr)
-            elif choice == 5:
-                print("AP Vertical Chart")
-                draw_ap_vertical_graph(fdr)
-            elif choice == 6:
-                print("A/THR Chart")
-                draw_ath_graph(fdr)
-            elif choice == 9:
-                print("Exit")
-                break
+    # #############################
+    # Interface chooser
+    # #############################
+
+    # use ui
+    if not args.command and not args.commandline:
+        userinterface_windows(args)
+    # use command line
+    elif args.commandline:
+        userinterface_commandline(args)
+    # execute only one command and exit
     else:
-        if args.command[0] == 'map':
+        single_command(args)
+
+
+# Executes a single command given via command line option and exits.
+def single_command(args):
+    if not args.file:
+        print("No CSV file provided")
+        exit()
+
+    if not os.path.isfile(args.file[0]):
+        print("CSV file not found: " + args.file[0])
+        exit()
+
+    fdr = pd.read_csv(args.file[0])
+    if args.command[0] == 'map':
+        print("Map")
+        draw_map_graph(fdr)
+    elif args.command[0] == 'ap':
+        print("AP Disconnect Chart")
+        draw_ap_graph(fdr)
+    elif args.command[0] == 'aoa':
+        print("Angle of Attack Chart")
+        draw_aoa_graph(fdr)
+    elif args.command[0] == 'apl':
+        print("AP Lateral Chart")
+        draw_ap_lateral_graph(fdr)
+    elif args.command[0] == 'apv':
+        print("AP Vertical Chart")
+        draw_ap_vertical_graph(fdr)
+    elif args.command[0] == 'athr':
+        print("A/THR Chart")
+        draw_ath_graph(fdr)
+    else:
+        print("Unknown command: " + args.command[0])
+
+
+# Presents a command line driven menu of options. No graphical interface.
+def userinterface_commandline(args):
+    if not args.file:
+        print("No CSV file provided")
+        exit()
+    fdr = pd.read_csv(args.file[0])
+    while True:  # use while True
+        menu_choice = ('Enter 1 for Route Map\n'
+                       'Enter 2 for AP Disconnect Chart\n'
+                       'Enter 3 for Angle of Attack (AoA) Chart\n'
+                       'Enter 4 for AP Lateral Chart\n'
+                       'Enter 5 for AP Vertical Chart\n'
+                       'Enter 6 for A/THR Chart\n'
+                       'Enter 0 to Exit\n'
+                       'Choice: ')
+        choice1 = raw_input(menu_choice)
+        choice = int(choice1)
+        if choice == 1:
             print("Map")
             draw_map_graph(fdr)
-        elif args.command[0] == 'ap':
+        elif choice == 2:
             print("AP Disconnect Chart")
             draw_ap_graph(fdr)
-        elif args.command[0] == 'aoa':
+        elif choice == 3:
             print("Angle of Attack Chart")
             draw_aoa_graph(fdr)
-        elif args.command[0] == 'apl':
+        elif choice == 4:
             print("AP Lateral Chart")
             draw_ap_lateral_graph(fdr)
-        elif args.command[0] == 'apv':
+        elif choice == 5:
             print("AP Vertical Chart")
             draw_ap_vertical_graph(fdr)
-        elif args.command[0] == 'athr':
+        elif choice == 6:
             print("A/THR Chart")
             draw_ath_graph(fdr)
+        elif choice == 0:
+            print("Exit")
+            break
 
 
-def menu():
-    strs = ('Enter 1 for Route Map\n'
-            'Enter 2 for AP Disconnect Chart\n'
-            'Enter 3 for Angle of Attack (AoA) Chart\n'
-            'Enter 4 for AP Lateral Chart\n'
-            'Enter 5 for AP Vertical Chart\n'
-            'Enter 6 for A/THR Chart\n'
-            'Enter 9 to Exit\n'
-            'Choice: ')
-    choice = raw_input(strs)
-    return int(choice)
+# Presents a graphical Windows interface.
+def userinterface_windows(args):
+    exefile = ''
+    fdrfile = ''
+    csvfile = ''
+
+    if args.exefile:
+        exefile = args.exefile[0]
+    if args.fdrfile:
+        fdrfile = args.fdrfile[0]
+    if args.csvfile:
+        csvfile = args.csvfile[0]
+
+    # ###########################
+    # Define window layout
+    # ###########################
+    layout = [[sg.Text("FDR Analysis Tool")],
+              [sg.HorizontalSeparator(color='black')],
+
+              [sg.Text('FDR File', size=(15, 1)), sg.Input(default_text=fdrfile, key='fdrfile'),
+               sg.FileBrowse(target='fdrfile', file_types=(('ALL Files', '*.fdr'),), )],
+
+              [sg.Button('Version Detection', key='__VERSIONCHECK__', size=(15, 1), disabled=True),
+               sg.Text('n/a', key='version')],
+
+              [sg.Text('FDR2CSV EXE', size=(15, 1)), sg.Input(default_text=exefile, key='exefile', enable_events=True),
+               sg.FileBrowse(target='exefile', file_types=(('ALL Files', '*.exe'),))],
+
+              [sg.Button('FDR 2 CSV', key='__FDR2CSV__', disabled=True)],
+
+              [sg.Text('CSV File', size=(15, 1)), sg.Input(default_text=csvfile, key='csvfile', enable_events=True),
+               sg.FileBrowse(target='csvfile', file_types=(('ALL Files', '*.csv'),), )],
+
+              [sg.HorizontalSeparator(color='black')],
+              [sg.Button('Flight Route Map', key='__ANALYZE_MAP__', disabled=True)],
+              [sg.Button('Autopilot Disconnect Analysis', key='__ANALYZE_AP__', disabled=True)],
+              [sg.Button('Angle of Attack (AoA) Analysis', key='__ANALYZE_AOA__', disabled=True)],
+              [sg.Button('Autopilot Lateral Mode Analysis', key='__ANALYZE_APL__', disabled=True)],
+              [sg.Button('Autopilot Vertical Mode Analysis', key='__ANALYZE_APV__', disabled=True)],
+              [sg.Button('Autothrust Analysis', key='__ANALYZE_ATHR__', disabled=True)],
+
+              [sg.HorizontalSeparator(color='black')],
+
+              [sg.Text('Ok', key='msg')],
+
+              [sg.HorizontalSeparator(color='black')],
+
+              [sg.Button("EXIT", key='__EXIT__')],
+              ]
+
+    # Create the window
+    window = sg.Window("FDR Analysis Tool", layout)
+
+    # ##########################
+    # UI event loop
+    # ##########################
+    while True:
+
+        event, values = window.read(timeout=100)
+
+        if event == '__EXIT__' or event == sg.WIN_CLOSED:
+            break
+
+        # Update fdr2vsc button's state
+        if os.path.isfile(values.get('fdrfile')):
+            window['__VERSIONCHECK__'].update(disabled=False)
+        else:
+            window['__VERSIONCHECK__'].update(disabled=True)
+
+        # Update fdr2vsc button's state
+        if os.path.isfile(values.get('exefile')) and os.path.isfile(values.get('fdrfile')):
+            window['__FDR2CSV__'].update(disabled=False)
+        else:
+            window['__FDR2CSV__'].update(disabled=True)
+
+        # Update analysis buttons' states
+        if os.path.isfile(values.get('csvfile')):
+            window['__ANALYZE_MAP__'].update(disabled=False)
+            window['__ANALYZE_AP__'].update(disabled=False)
+            window['__ANALYZE_AOA__'].update(disabled=False)
+            window['__ANALYZE_APV__'].update(disabled=False)
+            window['__ANALYZE_APL__'].update(disabled=False)
+            window['__ANALYZE_ATHR__'].update(disabled=False)
+        else:
+            window['__ANALYZE_MAP__'].update(disabled=True)
+            window['__ANALYZE_AP__'].update(disabled=True)
+            window['__ANALYZE_AOA__'].update(disabled=True)
+            window['__ANALYZE_APV__'].update(disabled=True)
+            window['__ANALYZE_APL__'].update(disabled=True)
+            window['__ANALYZE_ATHR__'].update(disabled=True)
+
+        # Versioncheck button pressed
+        if event == '__VERSIONCHECK__':
+            print("Check Version " + values.get('fdrfile'))
+            value, error = check_version(values.get('fdrfile'))
+            if error:
+                status_update(value, window)
+            else:
+                window['version'].update(value)
+                window['exefile'].update(get_exe_path(value))
+                status_reset(window)
+            continue
+
+        # FDR2CSV button pressed
+        if event == '__FDR2CSV__':
+            print("FDR 2 CSV " + values.get('fdrfile'))
+            window['csvfile'].update("")
+            window.refresh()
+            value = convert(values.get('exefile'), values.get('fdrfile'))
+            window['csvfile'].update(value)
+            continue
+
+        # Analysis button pressed and valid csvfile available
+        if values.get('csvfile'):
+            if event == '__ANALYZE_MAP__':
+                print("Map: " + values.get('csvfile'))
+                draw_map_graph(pd.read_csv(values.get('csvfile')))
+            elif event == '__ANALYZE_AP__':
+                print("AP Disconnect Chart: " + values.get('csvfile'))
+                draw_ap_graph(pd.read_csv(values.get('csvfile')))
+            elif event == '__ANALYZE_AOA__':
+                print("Angle of Attack Chart: " + values.get('csvfile'))
+                draw_aoa_graph(pd.read_csv(values.get('csvfile')))
+            elif event == '__ANALYZE_APL__':
+                print("AP Lateral Chart: " + values.get('csvfile'))
+                draw_ap_lateral_graph(pd.read_csv(values.get('csvfile')))
+            elif event == '__ANALYZE_APV__':
+                print("AP Vertical Chart: " + values.get('csvfile'))
+                draw_ap_vertical_graph(pd.read_csv(values.get('csvfile')))
+            elif event == '__ANALYZE_ATHR__':
+                print("A/THR Chart: " + values.get('csvfile'))
+                draw_ath_graph(pd.read_csv(values.get('csvfile')))
+            continue
+
+        if event == "__TIMEOUT__":
+            continue
+
+        print("Unknown Event: \"" + event + "\"")
+
+    window.close()
+
+
+def status_update(value, window):
+    window['msg'].update("Status: " + value, text_color='#ffaaaa')
+
+
+def status_reset(window):
+    window['msg'].update('Status: Ok', text_color='white')
+
+
+def check_version(fdrfile):
+    csvfile = fdrfile.replace(".fdr", ".csv")
+    print("CSV Filename: " + csvfile)
+    command = [r"fdr2csv\VersionDetection.exe", "-g", "-i", fdrfile]
+    result = subprocess.run(command, shell=True, capture_output=True)
+    out = str(result.stdout.strip(), 'UTF-8')
+    err = str(result.stderr.strip(), 'UTF-8')
+    print("Result out: " + out)
+    print("Result err: " + err)
+    if out.find("Failed") != -1:
+        err = out
+    return out, err
+
+
+def get_exe_path(version):
+    version_exefile = r"fdr2csv\fdr2csv_v"+version+".exe"
+    print("Selected Exe: " + version_exefile)
+    return version_exefile
+
+
+def convert(exefile, fdrfile):
+    csvfile = fdrfile.replace(".fdr", ".csv")
+    # print("CSV Filename: " + csvfile)
+    command = [exefile, "-i", fdrfile, "-o", csvfile]
+    # print("CWD: " + os.getcwd())
+    print("Converting FDR to CSV with command: " + ' '.join([str(v) for v in command]))
+    result = subprocess.run(command, shell=True, capture_output=True)
+    # print("Result out: " + str(result.stdout))
+    # print("Result err: " + str(result.stderr))
+    print("Converting done.")
+    if result.returncode:
+        csvfile = result.stderr
+    return csvfile
 
 
 def draw_map_graph(fdr):
@@ -292,8 +532,8 @@ def draw_aoa_graph(fdr):
 
     # show it
     plt.show()
-    
-    
+
+
 def draw_ap_lateral_graph(fdr):
     # get simulation time
     time = fdr['fbw.sim.time.simulation_time']
