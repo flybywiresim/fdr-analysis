@@ -1,6 +1,50 @@
 # FDR Analysis 
 
+## Installation
+
+- Download the support-fdr-package.zip
+- Extract it in a folder of your choice
+  - make sure it has the `fdr_analyser_ui.exe` and the `fdr2csv` folder
+- Run `fdr_analyser_ui.exe`  
+
 ## Usage
+
+```
+> fdr_analyser_ui.exe --help
+usage: fdr_analyser_ui.exe [-h] [-fdr FDRFILE] [-csv CSVFILE] [-exe EXEFILE] [-c COMMAND] [-cl]
+
+FDR file analysis
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -fdr FDRFILE, --fdrfile FDRFILE
+                        FDR file to analyze
+  -csv CSVFILE, --csvfile CSVFILE
+                        CSV file to analyze
+  -exe EXEFILE, --exefile EXEFILE
+                        EXE file for fdr2csv conversion (only for ui)
+  -c COMMAND, --command COMMAND
+                        FDR Chart Command (map, ap, aoa, apl, apv, athr)
+  -cl, --commandline    Command line usage - no ui
+```  
+
+## How to Analyse FDR data
+
+- Run `fdr_analyser_ui.exe` 
+    ![img.png](howto_1.png)
+
+- Choose the FDR file you want to analyze
+- Click on `Version Detection`
+  - if this button is not enabled the FDR File is not a valid file names
+  - this detects the required fdr2csv exe version and puts its path in to the FDR2CSV field
+- Click on `FDR 2 CSV`
+  - this starts the conversion process and will create a csv file with the same name as the fdr file in the same directory as the
+  - this process might take a few minutes (ui freezes during this time)
+  - if the CSV file is created it is shown in the CSV File chooser the Analyse buttons become available
+- Click on the desired analyse button
+- Done
+
+If you already have a CSV file you can directly choose this into the CSV File chooser and analyse it.
 
 ## FDR Files in WORK Folder
 
@@ -23,51 +67,3 @@ The work folder can be found here:
 The work folder can be found here:
 
 `%APPDATA%\Microsoft Flight Simulator\Packages\flybywire-aircraft-a320-neo\work\`
-
-## Create an Analysis Chart From the Data
-
-Test FDR file: 2021-11-15-12-57-13.fdr
-
-Preparation:
-
-- Add these files into a folder of your choice:
-  - fdr2csv_v11.exe
-  - fdr_analysis.exe 
-  - FDR file: (e.g. 2021-11-15-12-57-13.fdr)
-- Open a Terminal/Command/Powershell line and go to that folder 
-
-1. Convert the fdr file to csv
-
-	fdr2csv_v11.exe -i .\2021-11-15-12-57-13.fdr -o .\2021-11-15-12-57-13.csv 
-	
-	(you might need to use a different version of the fdr2csv_vx.exe for different versions of the a32nx)
-
-2. Create a graph:
-
-    fdr_analysis.exe -f .\2021-11-15-12-57-13.csv 
-
-    This will bring up a menu with available charts.
- 
-    ```
-    Enter 1 for Route Map
-    Enter 2 for AP Disconnect Chart
-    Enter 3 for Angle of Attack (AoA) Chart
-    Enter 4 for AP Lateral Chart
-    Enter 5 for AP Vertical Chart
-    Enter 6 for A/THR Chart
-    Enter 9 to Exit
-    Choice:
-    ````
-
-    ```
-      usage: fdr_analysis.exe [-h] -f FILE [-c COMMAND]
-
-      FDR file analysis
-
-      optional arguments:
-        -h, --help            show this help message and exit
-        -f FILE, --file FILE  FDR file to analyze
-        -c COMMAND, --command COMMAND
-                          FDR Chart Command (map, ap, aoa, apl, apv, athr)
-   ``` 
-
