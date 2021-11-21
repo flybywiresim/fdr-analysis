@@ -241,6 +241,7 @@ def userinterface_windows(args):
         if event == '__VERSIONCHECK__':
             print("Check Version " + values.get('fdrfile'))
             value, error = check_version(values.get('fdrfile'))
+            print("Version " + value)
             if error:
                 status_update(value, window)
             else:
@@ -298,13 +299,13 @@ def status_reset(window):
 
 def check_version(fdrfile):
     csvfile = fdrfile.replace(".fdr", ".csv")
-    print("CSV Filename: " + csvfile)
+    # print("CSV Filename: " + csvfile)
     command = [r"fdr2csv\VersionDetection.exe", "-g", "-i", fdrfile]
     result = subprocess.run(command, shell=True, capture_output=True)
     out = str(result.stdout.strip(), 'UTF-8')
     err = str(result.stderr.strip(), 'UTF-8')
-    print("Result out: " + out)
-    print("Result err: " + err)
+    # print("Result out: " + out)
+    # print("Result err: " + err)
     if out.find("Failed") != -1:
         err = out
     return out, err
@@ -312,7 +313,7 @@ def check_version(fdrfile):
 
 def get_exe_path(version):
     version_exefile = r"fdr2csv\fdr2csv_v"+version+".exe"
-    print("Selected Exe: " + version_exefile)
+    # print("Selected Exe: " + version_exefile)
     return version_exefile
 
 
@@ -321,7 +322,7 @@ def convert(exefile, fdrfile):
     # print("CSV Filename: " + csvfile)
     command = [exefile, "-i", fdrfile, "-o", csvfile]
     # print("CWD: " + os.getcwd())
-    print("Converting FDR to CSV with command: " + ' '.join([str(v) for v in command]))
+    # print("Converting FDR to CSV with command: " + ' '.join([str(v) for v in command]))
     result = subprocess.run(command, shell=True, capture_output=True)
     # print("Result out: " + str(result.stdout))
     # print("Result err: " + str(result.stderr))
