@@ -13,6 +13,7 @@ import PySimpleGUI as sg
 
 
 def main(argv):
+
     # ###########################
     # command line parsing
     # ###########################
@@ -297,6 +298,7 @@ def status_reset(window):
     window['msg'].update('Status: Ok', text_color='white')
 
 
+# Calls the VersionDetection.exe tool and returns the result separated in output and error message
 def check_version(fdrfile):
     csvfile = fdrfile.replace(".fdr", ".csv")
     # print("CSV Filename: " + csvfile)
@@ -311,12 +313,14 @@ def check_version(fdrfile):
     return out, err
 
 
+# Builds the exe file name for the fdr2exe tools from the given version
 def get_exe_path(version):
     version_exefile = r"fdr2csv\fdr2csv_v"+version+".exe"
     # print("Selected Exe: " + version_exefile)
     return version_exefile
 
 
+# Call the fdr2csv tool to convert fdr to csv. Returns the csvfile name or error message.
 def convert(exefile, fdrfile):
     csvfile = fdrfile.replace(".fdr", ".csv")
     # print("CSV Filename: " + csvfile)
