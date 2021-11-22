@@ -189,7 +189,7 @@ def userinterface_windows(args):
 
               [sg.HorizontalSeparator(color='black')],
 
-              [sg.Text('Ok', key='msg')],
+              [sg.Text('Status: Ok', key='msg')],
 
               [sg.HorizontalSeparator(color='black')],
 
