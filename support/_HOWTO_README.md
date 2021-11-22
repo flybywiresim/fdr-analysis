@@ -1,5 +1,7 @@
 # FDR Analysis 
 
+[Online version (main branch)](https://github.com/flybywiresim/fdr-analysis/blob/main/support/_HOWTO_README.md)
+
 ## Installation
 
 - Download the support-fdr-package.zip
