@@ -76,15 +76,15 @@ def main(argv):
 
 # Executes a single command given via command line option and exits.
 def single_command(args):
-    if not args.file:
+    if not args.csvfile:
         print("No CSV file provided")
         exit()
 
-    if not os.path.isfile(args.file[0]):
-        print("CSV file not found: " + args.file[0])
+    if not os.path.isfile(args.csvfile[0]):
+        print("CSV file not found: " + args.csvfile[0])
         exit()
 
-    fdr = pd.read_csv(args.file[0])
+    fdr = pd.read_csv(args.csvfile[0])
     if args.command[0] == 'map':
         print("Map")
         draw_map_graph(fdr)
@@ -103,6 +103,9 @@ def single_command(args):
     elif args.command[0] == 'athr':
         print("A/THR Chart")
         draw_ath_graph(fdr)
+    elif args.command[0] == 'input':
+        print("Controller Input Chart")
+        draw_input_graph(fdr)
     else:
         print("Unknown command: " + args.command[0])
 
@@ -392,6 +395,7 @@ def draw_ap_graph(fdr):
     # throttle
     axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
     axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].plot(time, 5 * fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index (/10)', color="green")
     axes[i].grid(True)
     axes[i].set_ylim(-20, 50)
     axes[i].legend()
