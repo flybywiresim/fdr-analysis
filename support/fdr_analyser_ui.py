@@ -120,6 +120,7 @@ def userinterface_commandline(args):
                        'Enter 4 for AP Lateral Chart\n'
                        'Enter 5 for AP Vertical Chart\n'
                        'Enter 6 for A/THR Chart\n'
+                       'Enter 6 for Controller Inputs Chart\n'
                        'Enter 0 to Exit\n'
                        'Choice: ')
         choice1 = raw_input(menu_choice)
@@ -141,6 +142,9 @@ def userinterface_commandline(args):
             draw_ap_vertical_graph(fdr)
         elif choice == 6:
             print("A/THR Chart")
+            draw_ath_graph(fdr)
+        elif choice == 7:
+            print("Controller Inputs Chart")
             draw_ath_graph(fdr)
         elif choice == 0:
             print("Exit")
@@ -187,6 +191,7 @@ def userinterface_windows(args):
               [sg.Button('Autopilot Lateral Mode Analysis', key='__ANALYZE_APL__', disabled=True)],
               [sg.Button('Autopilot Vertical Mode Analysis', key='__ANALYZE_APV__', disabled=True)],
               [sg.Button('Autothrust Analysis', key='__ANALYZE_ATHR__', disabled=True)],
+              [sg.Button('Controller Inputs Analysis', key='__ANALYZE_INPUTS__', disabled=True)],
 
               [sg.HorizontalSeparator(color='black')],
 
@@ -230,6 +235,7 @@ def userinterface_windows(args):
             window['__ANALYZE_APV__'].update(disabled=False)
             window['__ANALYZE_APL__'].update(disabled=False)
             window['__ANALYZE_ATHR__'].update(disabled=False)
+            window['__ANALYZE_INPUTS__'].update(disabled=False)
         else:
             window['__ANALYZE_MAP__'].update(disabled=True)
             window['__ANALYZE_AP__'].update(disabled=True)
@@ -237,6 +243,7 @@ def userinterface_windows(args):
             window['__ANALYZE_APV__'].update(disabled=True)
             window['__ANALYZE_APL__'].update(disabled=True)
             window['__ANALYZE_ATHR__'].update(disabled=True)
+            window['__ANALYZE_INPUTS__'].update(disabled=True)
 
         # Versioncheck button pressed
         if event == '__VERSIONCHECK__':
@@ -280,6 +287,9 @@ def userinterface_windows(args):
             elif event == '__ANALYZE_ATHR__':
                 print("A/THR Chart: " + values.get('csvfile'))
                 draw_ath_graph(pd.read_csv(values.get('csvfile')))
+            elif event == '__ANALYZE_INPUTS__':
+                print("Controller Inputs Chart: " + values.get('csvfile'))
+                draw_input_graph(pd.read_csv(values.get('csvfile')))
             continue
 
         if event == "__TIMEOUT__":
@@ -351,8 +361,9 @@ def draw_ap_graph(fdr):
     # get simulation time
     time = fdr['fbw.sim.time.simulation_time']
     # create figure with subplots
-    figure, axes = plt.subplots(11, sharex=True)
+    figure, axes = plt.subplots(10, sharex=True)
     i = 0
+
     # aircraft position, speed and direction
     axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
@@ -378,6 +389,27 @@ def draw_ap_graph(fdr):
     axes[i].set_ylim(-70, 150)
     axes[i].legend()
     i += 1
+    # throttle
+    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
+    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(-20, 50)
+    axes[i].legend()
+    i += 1
+    # spoilers
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(-1, 1)
+    axes[i].legend()
+    i += 1
+    # attitude
+    axes[i].plot(time, fdr['fbw.sim.data.Theta_deg'], label='Pitch', color="black")
+    axes[i].plot(time, fdr['fbw.sim.data.Phi_deg'], label='Roll', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(-60, 60)
+    axes[i].legend()
+    i += 1
     # axis inputs
     axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
     axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
@@ -397,20 +429,8 @@ def draw_ap_graph(fdr):
     axes[i].set_ylim(-1, +1)
     axes[i].legend()
     i += 1
-    # spoilers
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
-    axes[i].grid(True)
-    axes[i].set_ylim(-1, 1)
-    axes[i].legend()
-    i += 1
-    # axis ap on
-    axes[i].plot(time, fdr['fbw.sim.data.autopilot_custom_on'], label='Autopilot On', color="blue", linewidth=1.0)
-    axes[i].grid(False)
-    axes[i].set_ylim(0, +1)
-    axes[i].fill_between(time, fdr['fbw.sim.data.autopilot_custom_on'], color="blue")
-    axes[i].legend()
-    i += 1
+    axes[i].plot(time, fdr['fbw.sim.data.autopilot_custom_on'], label='Autopilot On', color="lightblue", linewidth=1.0)
+    axes[i].fill_between(time, fdr['fbw.sim.data.autopilot_custom_on'], color="lightblue")
     axes[i].plot(time, fdr['ap_sm.input.AP_1_push'], label='AP1 Push', linewidth=2.0, color="blue")
     axes[i].plot(time, fdr['ap_sm.input.AP_2_push'], label='AP2 Push', linewidth=2.0, color="green")
     axes[i].plot(time, fdr['ap_sm.input.AP_DISCONNECT_push'], label='AP Disconnect', linewidth=2.0, color="black")
@@ -422,20 +442,16 @@ def draw_ap_graph(fdr):
     axes[i].set_ylim(0, 1)
     axes[i].legend()
     i += 1
-    # attitude
-    axes[i].plot(time, fdr['fbw.sim.data.Theta_deg'], label='Pitch', color="black")
-    axes[i].plot(time, fdr['fbw.sim.data.Phi_deg'], label='Roll', color="red")
-    axes[i].grid(True)
-    axes[i].set_ylim(-60, 60)
-    axes[i].legend()
-    i += 1
     # axis sim rate
     axes[i].plot(time, fdr['fbw.sim.data.simulation_rate'], label='Sim Rate', color="blue", linewidth=3.0)
     axes[i].plot(time, fdr['fbw.sim.data.simulation_rate'] / fdr['fbw.sim.time.dt'], label='FPS', color="red")
+    axes[i].plot(time, 63 * fdr['ap_sm.input.FDR_event'], label='FDR Event', color="orange", linewidth=3.0)
+    axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="orange")
     axes[i].grid(True)
     axes[i].set_ylim(0, 64)
     axes[i].legend()
     i += 1
+
     # configure distances
     figure.subplots_adjust(
         left=0.03,
@@ -950,6 +966,103 @@ def draw_ath_graph(fdr):
     plt.get_current_fig_manager().window.state('zoomed')
 
     # show it
+    plt.show()
+
+
+def draw_input_graph(fdr):
+    # get simulation time
+    time = fdr['fbw.sim.time.simulation_time']
+    # create figure with subplots
+    figure, axes = plt.subplots(11, sharex=True)
+    i = 0
+
+    # aircraft position, speed and direction
+    axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 45000)
+    axes[i].legend()
+    i += 1
+    # axis inputs
+    axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
+    axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
+    axes[i].fill_between(time, -1.0, -0.5, alpha=0.1, color='red')
+    axes[i].fill_between(time, -0.5, 0.5, alpha=0.1, color='green')
+    axes[i].fill_between(time, 0.5, 1.0, alpha=0.1, color='red')
+    axes[i].grid(True)
+    axes[i].set_ylim(-1, +1)
+    axes[i].legend()
+    i += 1
+    # axis inputs
+    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
+    axes[i].fill_between(time, -1.0, -0.4, alpha=0.1, color='red')
+    axes[i].fill_between(time, -0.4, 0.4, alpha=0.1, color='green')
+    axes[i].fill_between(time, 0.4, 1.0, alpha=0.1, color='red')
+    axes[i].grid(True)
+    axes[i].set_ylim(-1, +1)
+    axes[i].legend()
+    i += 1
+    # throttle
+    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
+    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(-20, 50)
+    axes[i].legend()
+    i += 1
+    # spoilers
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(-1, 1)
+    axes[i].legend()
+    i += 1
+    # flaps
+    axes[i].plot(time, fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 5)
+    axes[i].legend()
+    i += 1
+    # fdr event
+    axes[i].plot(time, fdr['ap_sm.input.FDR_event'], label='FDR Event', color="red", linewidth=1.0)
+    axes[i].grid(False)
+    axes[i].set_ylim(0, +1)
+    axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="red")
+    axes[i].legend()
+    i += 1
+    # # brakes
+    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    # axes[i].grid(True)
+    # axes[i].set_ylim(-1, 1)
+    # axes[i].legend()
+    # i += 1
+    # # auto brake
+    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    # axes[i].grid(True)
+    # axes[i].set_ylim(-1, 1)
+    # axes[i].legend()
+    # i += 1
+
+    # configure distances
+    figure.subplots_adjust(
+        left=0.03,
+        bottom=0.02,
+        right=0.98,
+        top=0.95,
+        wspace=0,
+        hspace=0.2
+    )
+    # set title
+    figure.suptitle("FDR Analysis - Autopilot Deactivation")
+    # window size
+    # figure.set_size_inches(12, 10)
+    # maximize window
+    plt.get_current_fig_manager().window.state('zoomed')
+    # show it
+    mplcursors.cursor()
     plt.show()
 
 
