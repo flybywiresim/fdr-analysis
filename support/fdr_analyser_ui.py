@@ -265,9 +265,12 @@ def userinterface_windows(args):
         if event == '__FDR2CSV__':
             print("FDR 2 CSV " + values.get('fdrfile'))
             window['csvfile'].update("")
+            status_update("Converting...please wait!", window)
             window.refresh()
             value = convert(values.get('exefile'), values.get('fdrfile'))
+            status_reset(window)
             window['csvfile'].update(value)
+            window.refresh()
             continue
 
         # Analysis button pressed and valid csvfile available
@@ -977,7 +980,7 @@ def draw_input_graph(fdr):
     # get simulation time
     time = fdr['fbw.sim.time.simulation_time']
     # create figure with subplots
-    figure, axes = plt.subplots(11, sharex=True)
+    figure, axes = plt.subplots(10, sharex=True)
     i = 0
 
     # aircraft position, speed and direction
@@ -989,43 +992,69 @@ def draw_input_graph(fdr):
     axes[i].set_ylim(0, 45000)
     axes[i].legend()
     i += 1
-    # axis inputs
-    axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
-    axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
-    axes[i].fill_between(time, -1.0, -0.5, alpha=0.1, color='red')
-    axes[i].fill_between(time, -0.5, 0.5, alpha=0.1, color='green')
-    axes[i].fill_between(time, 0.5, 1.0, alpha=0.1, color='red')
-    axes[i].grid(True)
-    axes[i].set_ylim(-1, +1)
-    axes[i].legend()
-    i += 1
-    # axis inputs
-    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
-    axes[i].fill_between(time, -1.0, -0.4, alpha=0.1, color='red')
-    axes[i].fill_between(time, -0.4, 0.4, alpha=0.1, color='green')
-    axes[i].fill_between(time, 0.4, 1.0, alpha=0.1, color='red')
-    axes[i].grid(True)
-    axes[i].set_ylim(-1, +1)
-    axes[i].legend()
-    i += 1
     # throttle
     axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
     axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].plot(time, fdr['engine.engineEngine1N1'], label='ENG 1 N1', color="cyan")
+    axes[i].plot(time, fdr['engine.engineEngine2N1'], label='ENG 2 N1', color="green")
     axes[i].grid(True)
-    axes[i].set_ylim(-20, 50)
+    axes[i].set_ylim(-20, 100)
     axes[i].legend()
     i += 1
-    # spoilers
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    # gear
+    axes[i].plot(time, fdr['data.gear_handle_pos'], label='Gear Handle', color="blue")
+    axes[i].plot(time, fdr['data.park_brake_lever_pos'], label='Park Brake', color="red")
     axes[i].grid(True)
-    axes[i].set_ylim(-1, 1)
+    axes[i].set_ylim(0, 1.1)
     axes[i].legend()
     i += 1
     # flaps
     axes[i].plot(time, fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index', color="red")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 5)
+    axes[i].set_ylim(0, 5.5)
+    axes[i].legend()
+    i += 1
+    # spoilers
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    axes[i].plot(time, fdr['data.spoilers_armed'], label='Spoiler Armed', color="green")
+    axes[i].plot(time, fdr['data.spoilers_handle_pos'], label='Spoiler Handle Pos', color="orange")
+    axes[i].grid(True)
+    axes[i].set_ylim(-0.1, 1.1)
+    axes[i].legend()
+    i += 1
+    # Elevator, Ailerons
+    axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
+    axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
+    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
+    axes[i].fill_between(time, -1.0, -0.5, alpha=0.1, color='red')
+    axes[i].fill_between(time, -0.5, -0.4, alpha=0.1, color='yellow')
+    axes[i].fill_between(time, -0.5, 0.5, alpha=0.1, color='green')
+    axes[i].fill_between(time, 0.4, 0.5, alpha=0.1, color='yellow')
+    axes[i].fill_between(time, 0.5, 1.0, alpha=0.1, color='red')
+    axes[i].grid(True)
+    axes[i].set_ylim(-1.1, +1.1)
+    axes[i].legend()
+    i += 1
+    # brakes
+    axes[i].plot(time, fdr['data.brake_pedal_left_pos'], label='Brake Pedal Pos Left', color="red")
+    axes[i].plot(time, fdr['data.brake_pedal_right_pos'], label='Rake Pedal Right Pos', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 110)
+    axes[i].legend()
+    i += 1
+    # brakes
+    axes[i].plot(time, fdr['data.brake_left_sim_pos'], label='Brake Left', color="red")
+    axes[i].plot(time, fdr['data.brake_right_sim_pos'], label='Brake Right', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 1.1)
+    axes[i].legend()
+    i += 1
+    # auto brake
+    axes[i].plot(time, fdr['data.autobrake_armed_mode'], label='Autobrake Mode', color="red")
+    axes[i].plot(time, fdr['data.autobrake_decel_light'], label='Autobrake Decel Light', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 3.1)
     axes[i].legend()
     i += 1
     # fdr event
@@ -1035,20 +1064,6 @@ def draw_input_graph(fdr):
     axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="red")
     axes[i].legend()
     i += 1
-    # # brakes
-    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
-    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
-    # axes[i].grid(True)
-    # axes[i].set_ylim(-1, 1)
-    # axes[i].legend()
-    # i += 1
-    # # auto brake
-    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
-    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
-    # axes[i].grid(True)
-    # axes[i].set_ylim(-1, 1)
-    # axes[i].legend()
-    # i += 1
 
     # configure distances
     figure.subplots_adjust(
