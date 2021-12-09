@@ -367,7 +367,7 @@ def draw_ap_graph(fdr):
     # get simulation time
     time = fdr['fbw.sim.time.simulation_time']
     # create figure with subplots
-    figure, axes = plt.subplots(10, sharex=True)
+    figure, axes = plt.subplots(9, sharex=True)
     i = 0
 
     # aircraft position, speed and direction
@@ -391,6 +391,7 @@ def draw_ap_graph(fdr):
     axes[i].plot(time, fdr['athr.data.ISA_degC'], label='ISA', color="blue")
     axes[i].plot(time, fdr['athr.data.OAT_degC'], label='OAT', color="green")
     axes[i].plot(time, fdr['fbw.sim.data.ice_structure_percent'], label='ICE', color="magenta")
+    axes[i].plot(time, fdr['fbw.sim.data.ambient_pressure_mbar']/10, label='Ambient Pressure mBar (*10)', color="orange")
     axes[i].grid(True)
     axes[i].set_ylim(-70, 150)
     axes[i].legend()
@@ -417,25 +418,20 @@ def draw_ap_graph(fdr):
     axes[i].set_ylim(-60, 60)
     axes[i].legend()
     i += 1
-    # axis inputs
+    # Elevator, Ailerons, Rudder
     axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
     axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
+    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
     axes[i].fill_between(time, -1.0, -0.5, alpha=0.1, color='red')
+    axes[i].fill_between(time, -0.5, -0.4, alpha=0.1, color='yellow')
     axes[i].fill_between(time, -0.5, 0.5, alpha=0.1, color='green')
+    axes[i].fill_between(time, 0.4, 0.5, alpha=0.1, color='yellow')
     axes[i].fill_between(time, 0.5, 1.0, alpha=0.1, color='red')
     axes[i].grid(True)
-    axes[i].set_ylim(-1, +1)
+    axes[i].set_ylim(-1.1, +1.1)
     axes[i].legend()
     i += 1
-    # axis inputs
-    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
-    axes[i].fill_between(time, -1.0, -0.4, alpha=0.1, color='red')
-    axes[i].fill_between(time, -0.4, 0.4, alpha=0.1, color='green')
-    axes[i].fill_between(time, 0.4, 1.0, alpha=0.1, color='red')
-    axes[i].grid(True)
-    axes[i].set_ylim(-1, +1)
-    axes[i].legend()
-    i += 1
+    # AP
     axes[i].plot(time, fdr['fbw.sim.data.autopilot_custom_on'], label='Autopilot On', color="lightblue", linewidth=1.0)
     axes[i].fill_between(time, fdr['fbw.sim.data.autopilot_custom_on'], color="lightblue")
     axes[i].plot(time, fdr['ap_sm.input.AP_1_push'], label='AP1 Push', linewidth=2.0, color="blue")
