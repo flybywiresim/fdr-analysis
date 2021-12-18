@@ -6,6 +6,9 @@
 
 # Data Columns
 # ======================================
+
+ap_law.Nosewheel_c
+ap_law.Phi_loc_c
 ap_law.ap_on
 ap_law.autopilot.Beta_c_deg
 ap_law.autopilot.Phi_c_deg
@@ -43,6 +46,8 @@ ap_sm.data.by_m_s2
 ap_sm.data.bz_m_s2
 ap_sm.data.cruise_altitude
 ap_sm.data.flaps_handle_index
+ap_sm.data.flight_guidance_phi_deg
+ap_sm.data.flight_guidance_phi_limit_deg
 ap_sm.data.flight_guidance_tae_deg
 ap_sm.data.flight_guidance_xtk_nmi
 ap_sm.data.flight_phase
@@ -211,6 +216,7 @@ ap_sm.vertical.output.TCAS_message_RA_inhibit
 ap_sm.vertical.output.TCAS_message_TRK_FPA_deselection
 ap_sm.vertical.output.TCAS_message_disarm
 ap_sm.vertical.output.TCAS_sub_mode
+ap_sm.vertical.output.TCAS_sub_mode_compatible
 ap_sm.vertical.output.V_c_kn
 ap_sm.vertical.output.law
 ap_sm.vertical.output.mode
@@ -252,6 +258,7 @@ ap_sm.vertical_previous.output.TCAS_message_RA_inhibit
 ap_sm.vertical_previous.output.TCAS_message_TRK_FPA_deselection
 ap_sm.vertical_previous.output.TCAS_message_disarm
 ap_sm.vertical_previous.output.TCAS_sub_mode
+ap_sm.vertical_previous.output.TCAS_sub_mode_compatible
 ap_sm.vertical_previous.output.V_c_kn
 ap_sm.vertical_previous.output.law
 ap_sm.vertical_previous.output.mode
@@ -548,5 +555,3 @@ fbw.sim.time.dt
 fbw.sim.time.monotonic_time
 fbw.sim.time.monotonic_time
 fbw.sim.time.simulation_time
-
-
