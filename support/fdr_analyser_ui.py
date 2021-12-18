@@ -450,6 +450,8 @@ def draw_ap_graph(fdr):
     axes[i].plot(time, fdr['fbw.sim.data.simulation_rate'] / fdr['fbw.sim.time.dt'], label='FPS', color="red")
     axes[i].plot(time, 63 * fdr['ap_sm.input.FDR_event'], label='FDR Event', color="orange", linewidth=3.0)
     axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="orange")
+    axes[i].plot(time, 63 * fdr['fbw.sim.data.pause_on'], label='Pause On', color="brown", linewidth=3.0)
+    axes[i].fill_between(time, fdr['fbw.sim.data.pause_on'], color="brown")
     axes[i].grid(True)
     axes[i].set_ylim(0, 64)
     axes[i].legend()
