@@ -48,7 +48,7 @@ def main(argv):
         nargs=1,
         dest='command',
         required=False,
-        help='FDR Chart Command (map, ap, aoa, apl, apv, athr)'
+        help='FDR Chart Command (map, ap, aoa, apl, apv, athr, thr)'
     )
     parser.add_argument(
         '-cl',
@@ -106,6 +106,9 @@ def single_command(args):
     elif args.command[0] == 'input':
         print("Controller Input Chart")
         draw_input_graph(fdr)
+    elif args.command[0] == 'thr':
+        print("Thrust Chart")
+        draw_thrust_graph(fdr)
     else:
         print("Unknown command: " + args.command[0])
 
@@ -123,7 +126,8 @@ def userinterface_commandline(args):
                        'Enter 4 for AP Lateral Chart\n'
                        'Enter 5 for AP Vertical Chart\n'
                        'Enter 6 for A/THR Chart\n'
-                       'Enter 6 for Controller Inputs Chart\n'
+                       'Enter 7 for Controller Inputs Chart\n'
+                       'Enter 8 for Thrust Chart\n'
                        'Enter 0 to Exit\n'
                        'Choice: ')
         choice1 = raw_input(menu_choice)
@@ -149,6 +153,9 @@ def userinterface_commandline(args):
         elif choice == 7:
             print("Controller Inputs Chart")
             draw_ath_graph(fdr)
+        elif choice == 8:
+            print("Thrust Chart")
+            draw_thrust_graph(fdr)
         elif choice == 0:
             print("Exit")
             break
@@ -190,11 +197,12 @@ def userinterface_windows(args):
               [sg.HorizontalSeparator(color='black')],
               [sg.Button('Flight Route Map', key='__ANALYZE_MAP__', disabled=True)],
               [sg.Button('Autopilot Disconnect Analysis', key='__ANALYZE_AP__', disabled=True)],
+              [sg.Button('Controller Inputs Analysis', key='__ANALYZE_INPUTS__', disabled=True)],
+              [sg.Button('Thrust Analysis', key='__ANALYZE_THRUST__', disabled=True)],
               [sg.Button('Angle of Attack (AoA) Analysis', key='__ANALYZE_AOA__', disabled=True)],
               [sg.Button('Autopilot Lateral Mode Analysis', key='__ANALYZE_APL__', disabled=True)],
               [sg.Button('Autopilot Vertical Mode Analysis', key='__ANALYZE_APV__', disabled=True)],
               [sg.Button('Autothrust Analysis', key='__ANALYZE_ATHR__', disabled=True)],
-              [sg.Button('Controller Inputs Analysis', key='__ANALYZE_INPUTS__', disabled=True)],
 
               [sg.HorizontalSeparator(color='black')],
 
@@ -239,6 +247,7 @@ def userinterface_windows(args):
             window['__ANALYZE_APL__'].update(disabled=False)
             window['__ANALYZE_ATHR__'].update(disabled=False)
             window['__ANALYZE_INPUTS__'].update(disabled=False)
+            window['__ANALYZE_THRUST__'].update(disabled=False)
         else:
             window['__ANALYZE_MAP__'].update(disabled=True)
             window['__ANALYZE_AP__'].update(disabled=True)
@@ -247,6 +256,7 @@ def userinterface_windows(args):
             window['__ANALYZE_APL__'].update(disabled=True)
             window['__ANALYZE_ATHR__'].update(disabled=True)
             window['__ANALYZE_INPUTS__'].update(disabled=True)
+            window['__ANALYZE_THRUST__'].update(disabled=True)
 
         # Versioncheck button pressed
         if event == '__VERSIONCHECK__':
@@ -296,6 +306,9 @@ def userinterface_windows(args):
             elif event == '__ANALYZE_INPUTS__':
                 print("Controller Inputs Chart: " + values.get('csvfile'))
                 draw_input_graph(pd.read_csv(values.get('csvfile')))
+            elif event == '__ANALYZE_THRUST__':
+                print("Thrust Chart: " + values.get('csvfile'))
+                draw_thrust_graph(pd.read_csv(values.get('csvfile')))
             continue
 
         if event == "__TIMEOUT__":
@@ -469,11 +482,298 @@ def draw_ap_graph(fdr):
     # set title
     figure.suptitle("FDR Analysis - Autopilot Deactivation")
     # window size
-    # figure.set_size_inches(12, 10)
+    figure.set_size_inches(16, 12)
     # maximize window
-    plt.get_current_fig_manager().window.state('zoomed')
-    # show it
+    # plt.get_current_fig_manager().window.state('zoomed')
+    # annotations
     mplcursors.cursor()
+    # show it
+    plt.show()
+
+
+def draw_input_graph(fdr):
+    # get simulation time
+    time = fdr['fbw.sim.time.simulation_time']
+    # create figure with subplots
+    figure, axes = plt.subplots(10, sharex=True)
+    i = 0
+
+    # aircraft position, speed and direction
+    axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 45000)
+    axes[i].legend()
+    i += 1
+    # throttle
+    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
+    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].plot(time, fdr['engine.engineEngine1N1'], label='ENG 1 N1', color="cyan")
+    axes[i].plot(time, fdr['engine.engineEngine2N1'], label='ENG 2 N1', color="green")
+    axes[i].grid(True)
+    axes[i].set_ylim(-20, 100)
+    axes[i].legend()
+    i += 1
+    # gear
+    axes[i].plot(time, fdr['data.gear_handle_pos'], label='Gear Handle', color="blue")
+    axes[i].plot(time, fdr['data.park_brake_lever_pos'], label='Park Brake', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 1.1)
+    axes[i].legend()
+    i += 1
+    # flaps
+    axes[i].plot(time, fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 5.5)
+    axes[i].legend()
+    i += 1
+    # spoilers
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    axes[i].plot(time, fdr['data.spoilers_armed'], label='Spoiler Armed', color="green")
+    axes[i].plot(time, fdr['data.spoilers_handle_pos'], label='Spoiler Handle Pos', color="orange")
+    axes[i].grid(True)
+    axes[i].set_ylim(-0.1, 1.1)
+    axes[i].legend()
+    i += 1
+    # Elevator, Ailerons
+    axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
+    axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
+    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
+    axes[i].fill_between(time, -1.0, -0.5, alpha=0.1, color='red')
+    axes[i].fill_between(time, -0.5, -0.4, alpha=0.1, color='yellow')
+    axes[i].fill_between(time, -0.5, 0.5, alpha=0.1, color='green')
+    axes[i].fill_between(time, 0.4, 0.5, alpha=0.1, color='yellow')
+    axes[i].fill_between(time, 0.5, 1.0, alpha=0.1, color='red')
+    axes[i].grid(True)
+    axes[i].set_ylim(-1.1, +1.1)
+    axes[i].legend()
+    i += 1
+    # brakes
+    axes[i].plot(time, fdr['data.brake_pedal_left_pos'], label='Brake Pedal Pos Left', color="red")
+    axes[i].plot(time, fdr['data.brake_pedal_right_pos'], label='Rake Pedal Right Pos', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 110)
+    axes[i].legend()
+    i += 1
+    # brakes
+    axes[i].plot(time, fdr['data.brake_left_sim_pos'], label='Brake Left', color="red")
+    axes[i].plot(time, fdr['data.brake_right_sim_pos'], label='Brake Right', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 1.1)
+    axes[i].legend()
+    i += 1
+    # auto brake
+    axes[i].plot(time, fdr['data.autobrake_armed_mode'], label='Autobrake Mode', color="red")
+    axes[i].plot(time, fdr['data.autobrake_decel_light'], label='Autobrake Decel Light', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 3.1)
+    axes[i].legend()
+    i += 1
+    # fdr event
+    axes[i].plot(time, fdr['ap_sm.input.FDR_event'], label='FDR Event', color="red", linewidth=1.0)
+    axes[i].grid(False)
+    axes[i].set_ylim(0, +1)
+    axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="red")
+    axes[i].legend()
+    i += 1
+
+    # configure distances
+    figure.subplots_adjust(
+        left=0.03,
+        bottom=0.02,
+        right=0.98,
+        top=0.95,
+        wspace=0,
+        hspace=0.2
+    )
+    # set title
+    figure.suptitle("FDR Analysis - Autopilot Deactivation")
+    # window size
+    figure.set_size_inches(16, 12)
+    # maximize window
+    # plt.get_current_fig_manager().window.state('zoomed')
+    # annotations
+    mplcursors.cursor()
+    # show it
+    plt.show()
+
+
+def draw_thrust_graph(fdr):
+    # get simulation time
+    time = fdr['fbw.sim.time.simulation_time']
+    # support math text
+    plt.rcParams.update({'mathtext.default': 'regular'})
+    # create figure with subplots
+    figure, axes = plt.subplots(8, sharex=True)
+
+    i = 0
+
+    # ==================================================================================================================
+    # aircraft position, speed and direction
+    axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
+    axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 45000)
+    axes[i].legend()
+    mplcursors.cursor(axes[i], multiple=True)
+    i += 1
+
+    # ==================================================================================================================
+    # A/THR
+    axes[i].plot(time, fdr['athr.output.status'], label='ATHR Status', color="green")
+    axes[i].fill_between(time, fdr['athr.output.status'], alpha=0.1, color="green")
+    axes[i].plot(time, fdr['athr.input.ATHR_push'], label='ATHR Push', color="blue")
+    axes[i].plot(time, fdr['athr.input.ATHR_disconnect'], label='ATHR Disconnect', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(-0.1, 2.1)
+    axes[i].legend()
+
+    class AutothrustStatus(Enum):
+        DISENGAGED = 0
+        ENGAGED_ARMED = 1
+        ENGAGED_ACTIVE = 2
+
+    mplcursors.cursor(axes[i], multiple=True).connect(
+        "add",
+        lambda sel: sel.annotation.set(
+            text="{l:s}\n{y:s}\nt={x:.2f}".format(l=sel.artist.get_label(), x=sel.target[0],
+                                                  y=AutothrustStatus(int(sel.target[1])).name),
+            fontfamily='monospace',
+            ma="right"
+        )
+    )
+
+    i += 1
+
+    # ==================================================================================================================
+    # A/THR Mode
+    axes[i].plot(time, fdr['ap_sm.output.autothrust_mode'], label='A/THR Requested Mode', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(-0.1, 3.1)
+    axes[i].legend()
+
+    class AutothrustRequestedMode(Enum):
+        NONE = 0
+        SPEED = 1
+        THRUST_IDLE = 2
+        THRUST_CLB = 3
+
+    mplcursors.cursor(axes[i], multiple=True).connect(
+        "add",
+        lambda sel: sel.annotation.set(
+            text="{l:s}\n{y:s}\nt={x:.2f}".format(l=sel.artist.get_label(), x=sel.target[0],
+                                                  y=AutothrustRequestedMode(int(sel.target[1])).name),
+            fontfamily='monospace',
+            ma="right"
+        )
+    )
+
+    i += 1
+
+    axes[i].plot(time, fdr['athr.output.mode'], label='A/THR Mode', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(-0.1, 14.1)
+    axes[i].legend()
+
+    class AutothrustMode(Enum):
+        NONE = 0
+        MAN_TOGA = 1
+        MAN_GA_SOFT = 2
+        MAN_FLEX = 3
+        MAN_DTO = 4
+        MAN_MCT = 5
+        MAN_THR = 6
+        SPEED = 7
+        MACH = 8
+        THR_MCT = 9
+        THR_CLB = 10
+        THR_LVR = 11
+        THR_IDLE = 12
+        A_FLOOR = 13
+        TOGA_LK = 14
+
+    mplcursors.cursor(axes[i], multiple=True).connect(
+        "add",
+        lambda sel: sel.annotation.set(
+            text="{l:s}\n{y:s}\nt={x:.2f}".format(l=sel.artist.get_label(), x=sel.target[0],
+                                                  y=AutothrustMode(int(sel.target[1])).name),
+            fontfamily='monospace',
+            ma="right"
+        )
+    )
+
+    i += 1
+
+    # ==================================================================================================================
+    # throttle left
+    # axes[i].plot(time, fdr['athr.input.TLA_1_deg'], label='TLAdeg Left', color="magenta")
+    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
+    axes[i].plot(time, fdr['athr.output.N1_TLA_1_percent'], label='TLA Left', color="blue")
+    axes[i].plot(time, fdr['athr.output.sim_throttle_lever_1_pos'], label='TPosSim Left', color="green")
+    axes[i].grid(True)
+    axes[i].set_ylim(-20, 100)
+    axes[i].legend()
+    mplcursors.cursor(axes[i], multiple=True)
+    i += 1
+
+    # ==================================================================================================================
+    # throttle right
+    # axes[i].plot(time, fdr['athr.input.TLA_2_deg'], label='TLAdeg Right', color="magenta")
+    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="red")
+    axes[i].plot(time, fdr['athr.output.N1_TLA_2_percent'], label='TLA Right', color="blue")
+    axes[i].plot(time, fdr['athr.output.sim_throttle_lever_2_pos'], label='TPosSim Right', color="green")
+    axes[i].grid(True)
+    axes[i].set_ylim(-20, 100)
+    axes[i].legend()
+    mplcursors.cursor(axes[i], multiple=True)
+    i += 1
+
+    # ==================================================================================================================
+    # ENG 1
+    axes[i].plot(time, fdr['athr.output.N1_c_1_percent'], label='ENG 1 N1c', color="orange")
+    axes[i].plot(time, fdr['athr.data.commanded_engine_N1_1_percent'], label='ENG 1 N1cc', color="green")
+    # axes[i].plot(time, fdr['athr.data.engine_N1_1_percent'], label='ENG 1 N1%', color="blue")
+    axes[i].plot(time, fdr['engine.engineEngine1N1'], label='ENG 1 N1', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(-10, 110)
+    axes[i].legend()
+    mplcursors.cursor(axes[i], multiple=True)
+    i += 1
+
+    # ==================================================================================================================
+    # ENG 2
+    axes[i].plot(time, fdr['athr.output.N1_c_2_percent'], label='ENG 2 N1c', color="orange")
+    axes[i].plot(time, fdr['athr.data.commanded_engine_N1_2_percent'], label='ENG 2 N1cc', color="green")
+    # axes[i].plot(time, fdr['athr.data.engine_N1_2_percent'], label='ENG 2 N1%', color="blue")
+    axes[i].plot(time, fdr['engine.engineEngine2N1'], label='ENG 2 N1', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(-10, 110)
+    axes[i].legend()
+    mplcursors.cursor(axes[i], multiple=True)
+    i += 1
+
+    # configure distances
+    figure.subplots_adjust(
+        left=0.03,
+        bottom=0.02,
+        right=0.98,
+        top=0.95,
+        wspace=0,
+        hspace=0.2
+    )
+    # set title
+    figure.suptitle("FDR Analysis - Autopilot Deactivation")
+    # window size
+    figure.set_size_inches(16, 12)
+    # maximize window
+    # plt.get_current_fig_manager().window.state('zoomed')
+    # show it
+    # mplcursors.cursor()
     plt.show()
 
 
@@ -973,114 +1273,6 @@ def draw_ath_graph(fdr):
     # show it
     plt.show()
 
-
-def draw_input_graph(fdr):
-    # get simulation time
-    time = fdr['fbw.sim.time.simulation_time']
-    # create figure with subplots
-    figure, axes = plt.subplots(10, sharex=True)
-    i = 0
-
-    # aircraft position, speed and direction
-    axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
-    axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
-    axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
-    axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
-    axes[i].grid(True)
-    axes[i].set_ylim(0, 45000)
-    axes[i].legend()
-    i += 1
-    # throttle
-    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
-    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="blue")
-    axes[i].plot(time, fdr['engine.engineEngine1N1'], label='ENG 1 N1', color="cyan")
-    axes[i].plot(time, fdr['engine.engineEngine2N1'], label='ENG 2 N1', color="green")
-    axes[i].grid(True)
-    axes[i].set_ylim(-20, 100)
-    axes[i].legend()
-    i += 1
-    # gear
-    axes[i].plot(time, fdr['data.gear_handle_pos'], label='Gear Handle', color="blue")
-    axes[i].plot(time, fdr['data.park_brake_lever_pos'], label='Park Brake', color="red")
-    axes[i].grid(True)
-    axes[i].set_ylim(0, 1.1)
-    axes[i].legend()
-    i += 1
-    # flaps
-    axes[i].plot(time, fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index', color="red")
-    axes[i].grid(True)
-    axes[i].set_ylim(0, 5.5)
-    axes[i].legend()
-    i += 1
-    # spoilers
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
-    axes[i].plot(time, fdr['data.spoilers_armed'], label='Spoiler Armed', color="green")
-    axes[i].plot(time, fdr['data.spoilers_handle_pos'], label='Spoiler Handle Pos', color="orange")
-    axes[i].grid(True)
-    axes[i].set_ylim(-0.1, 1.1)
-    axes[i].legend()
-    i += 1
-    # Elevator, Ailerons
-    axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
-    axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
-    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
-    axes[i].fill_between(time, -1.0, -0.5, alpha=0.1, color='red')
-    axes[i].fill_between(time, -0.5, -0.4, alpha=0.1, color='yellow')
-    axes[i].fill_between(time, -0.5, 0.5, alpha=0.1, color='green')
-    axes[i].fill_between(time, 0.4, 0.5, alpha=0.1, color='yellow')
-    axes[i].fill_between(time, 0.5, 1.0, alpha=0.1, color='red')
-    axes[i].grid(True)
-    axes[i].set_ylim(-1.1, +1.1)
-    axes[i].legend()
-    i += 1
-    # brakes
-    axes[i].plot(time, fdr['data.brake_pedal_left_pos'], label='Brake Pedal Pos Left', color="red")
-    axes[i].plot(time, fdr['data.brake_pedal_right_pos'], label='Rake Pedal Right Pos', color="blue")
-    axes[i].grid(True)
-    axes[i].set_ylim(0, 110)
-    axes[i].legend()
-    i += 1
-    # brakes
-    axes[i].plot(time, fdr['data.brake_left_sim_pos'], label='Brake Left', color="red")
-    axes[i].plot(time, fdr['data.brake_right_sim_pos'], label='Brake Right', color="blue")
-    axes[i].grid(True)
-    axes[i].set_ylim(0, 1.1)
-    axes[i].legend()
-    i += 1
-    # auto brake
-    axes[i].plot(time, fdr['data.autobrake_armed_mode'], label='Autobrake Mode', color="red")
-    axes[i].plot(time, fdr['data.autobrake_decel_light'], label='Autobrake Decel Light', color="blue")
-    axes[i].grid(True)
-    axes[i].set_ylim(0, 3.1)
-    axes[i].legend()
-    i += 1
-    # fdr event
-    axes[i].plot(time, fdr['ap_sm.input.FDR_event'], label='FDR Event', color="red", linewidth=1.0)
-    axes[i].grid(False)
-    axes[i].set_ylim(0, +1)
-    axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="red")
-    axes[i].legend()
-    i += 1
-
-    # configure distances
-    figure.subplots_adjust(
-        left=0.03,
-        bottom=0.02,
-        right=0.98,
-        top=0.95,
-        wspace=0,
-        hspace=0.2
-    )
-    # set title
-    figure.suptitle("FDR Analysis - Autopilot Deactivation")
-    # window size
-    # figure.set_size_inches(12, 10)
-    # maximize window
-    plt.get_current_fig_manager().window.state('zoomed')
-    # show it
-    mplcursors.cursor()
-    plt.show()
 
 
 if __name__ == "__main__":
