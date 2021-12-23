@@ -13,7 +13,6 @@ import PySimpleGUI as sg
 
 
 def main(argv):
-
     # ###########################
     # command line parsing
     # ###########################
@@ -344,7 +343,7 @@ def check_version(fdrfile):
 
 # Builds the exe file name for the fdr2exe tools from the given version
 def get_exe_path(version):
-    version_exefile = r"fdr2csv\fdr2csv_v"+version+".exe"
+    version_exefile = r"fdr2csv\fdr2csv_v" + version + ".exe"
     # print("Selected Exe: " + version_exefile)
     return version_exefile
 
@@ -404,7 +403,8 @@ def draw_ap_graph(fdr):
     axes[i].plot(time, fdr['athr.data.ISA_degC'], label='ISA', color="blue")
     axes[i].plot(time, fdr['athr.data.OAT_degC'], label='OAT', color="green")
     axes[i].plot(time, fdr['fbw.sim.data.ice_structure_percent'], label='ICE', color="magenta")
-    axes[i].plot(time, fdr['fbw.sim.data.ambient_pressure_mbar']/10, label='Ambient Pressure mBar (*10)', color="orange")
+    axes[i].plot(time, fdr['fbw.sim.data.ambient_pressure_mbar'] / 10, label='Ambient Pressure mBar (*10)',
+                 color="orange")
     axes[i].grid(True)
     axes[i].set_ylim(-70, 150)
     axes[i].legend()
@@ -520,13 +520,13 @@ def draw_input_graph(fdr):
     axes[i].plot(time, fdr['data.gear_handle_pos'], label='Gear Handle', color="blue")
     axes[i].plot(time, fdr['data.park_brake_lever_pos'], label='Park Brake', color="red")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 1.1)
+    axes[i].set_ylim(-0.1, 1.1)
     axes[i].legend()
     i += 1
     # flaps
     axes[i].plot(time, fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index', color="red")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 5.5)
+    axes[i].set_ylim(-0.1, 5.5)
     axes[i].legend()
     i += 1
     # spoilers
@@ -555,27 +555,27 @@ def draw_input_graph(fdr):
     axes[i].plot(time, fdr['data.brake_pedal_left_pos'], label='Brake Pedal Pos Left', color="red")
     axes[i].plot(time, fdr['data.brake_pedal_right_pos'], label='Rake Pedal Right Pos', color="blue")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 110)
+    axes[i].set_ylim(-0.1, 110)
     axes[i].legend()
     i += 1
     # brakes
     axes[i].plot(time, fdr['data.brake_left_sim_pos'], label='Brake Left', color="red")
     axes[i].plot(time, fdr['data.brake_right_sim_pos'], label='Brake Right', color="blue")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 1.1)
+    axes[i].set_ylim(-0.1, 1.1)
     axes[i].legend()
     i += 1
     # auto brake
     axes[i].plot(time, fdr['data.autobrake_armed_mode'], label='Autobrake Mode', color="red")
     axes[i].plot(time, fdr['data.autobrake_decel_light'], label='Autobrake Decel Light', color="blue")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 3.1)
+    axes[i].set_ylim(-0.1, 3.1)
     axes[i].legend()
     i += 1
     # fdr event
     axes[i].plot(time, fdr['ap_sm.input.FDR_event'], label='FDR Event', color="red", linewidth=1.0)
     axes[i].grid(False)
-    axes[i].set_ylim(0, +1)
+    axes[i].set_ylim(-0.1, +1)
     axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="red")
     axes[i].legend()
     i += 1
@@ -590,7 +590,7 @@ def draw_input_graph(fdr):
         hspace=0.2
     )
     # set title
-    figure.suptitle("FDR Analysis - Autopilot Deactivation")
+    figure.suptitle("FDR Analysis - Controller Input")
     # window size
     figure.set_size_inches(16, 12)
     # maximize window
@@ -601,13 +601,23 @@ def draw_input_graph(fdr):
     plt.show()
 
 
+# Thrust analysis
+# ==================================
+# engine_N1_1_percent = Current N1
+# N1_TLA_1_percent = N1 current TLA
+# sim_throttle_lever_1_pos = STLA (sim throttle level angle) = throttle setting in in sim
+# N1_c_1_percent = Target N1 for engines (through manual thrust or ATHR)
+# commanded_engine_N1_1_percent = expected N1 on basis of STLA
+# engineEngine1N1 = current N1 from engine model (e.g. correct at start ig sein, where sim value is not correct)
+# athr.input.TLA_1_deg = fbw.sim.data.thrust_lever_1_pos
+#
 def draw_thrust_graph(fdr):
     # get simulation time
     time = fdr['fbw.sim.time.simulation_time']
     # support math text
     plt.rcParams.update({'mathtext.default': 'regular'})
     # create figure with subplots
-    figure, axes = plt.subplots(8, sharex=True)
+    figure, axes = plt.subplots(9, sharex=True)
 
     i = 0
 
@@ -618,7 +628,7 @@ def draw_thrust_graph(fdr):
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
     axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 45000)
+    axes[i].set_ylim(-1, 45000)
     axes[i].legend()
     mplcursors.cursor(axes[i], multiple=True)
     i += 1
@@ -710,33 +720,48 @@ def draw_thrust_graph(fdr):
     i += 1
 
     # ==================================================================================================================
-    # throttle left
-    # axes[i].plot(time, fdr['athr.input.TLA_1_deg'], label='TLAdeg Left', color="magenta")
-    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
-    axes[i].plot(time, fdr['athr.output.N1_TLA_1_percent'], label='TLA Left', color="blue")
-    axes[i].plot(time, fdr['athr.output.sim_throttle_lever_1_pos'], label='TPosSim Left', color="green")
+    # Throttle Input
+    axes[i].plot(time, fdr['athr.input.TLA_1_deg'], label='TLA deg Left', color="blue")
+    axes[i].plot(time, fdr['athr.input.TLA_2_deg'], label='TLA deg Right', color="red")
     axes[i].grid(True)
-    axes[i].set_ylim(-20, 100)
+    axes[i].set_ylim(-21, 50)
     axes[i].legend()
-    mplcursors.cursor(axes[i], multiple=True)
+
+    class ThrottleDetent(Enum):
+        Full_REVERSE = -20
+        REVERSE_IDLE = -16
+        IDLE = 0
+        CLB = 25
+        FLX_MCT = 35
+        TOGA = 45
+
+    mplcursors.cursor(axes[i], multiple=True).connect(
+        "add",
+        lambda sel: sel.annotation.set(
+            text="{l:s}\n{y:s}\nt={x:.2f}".format(l=sel.artist.get_label(), x=sel.target[0],
+                                                  y=ThrottleDetent(int(sel.target[1])).name),
+            fontfamily='monospace',
+            ma="right"
+        )
+    )
+
     i += 1
 
     # ==================================================================================================================
-    # throttle right
-    # axes[i].plot(time, fdr['athr.input.TLA_2_deg'], label='TLAdeg Right', color="magenta")
-    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="red")
-    axes[i].plot(time, fdr['athr.output.N1_TLA_2_percent'], label='TLA Right', color="blue")
-    axes[i].plot(time, fdr['athr.output.sim_throttle_lever_2_pos'], label='TPosSim Right', color="green")
+    # Sim Throttle left + right
+    axes[i].plot(time, fdr['athr.output.sim_throttle_lever_1_pos'], label='Sim Throttle Left', color="green")
+    axes[i].plot(time, fdr['athr.output.sim_throttle_lever_2_pos'], label='Sim Throttle Right', color="orange")
     axes[i].grid(True)
-    axes[i].set_ylim(-20, 100)
+    axes[i].set_ylim(-21, 110)
     axes[i].legend()
     mplcursors.cursor(axes[i], multiple=True)
     i += 1
 
     # ==================================================================================================================
     # ENG 1
-    axes[i].plot(time, fdr['athr.output.N1_c_1_percent'], label='ENG 1 N1c', color="orange")
-    axes[i].plot(time, fdr['athr.data.commanded_engine_N1_1_percent'], label='ENG 1 N1cc', color="green")
+    axes[i].plot(time, fdr['athr.output.N1_TLA_1_percent'], label='TLA N1 % Left', color="black")
+    axes[i].plot(time, fdr['athr.output.N1_c_1_percent'], label='ENG 1 Commanded N1', color="orange")
+    axes[i].plot(time, fdr['athr.data.commanded_engine_N1_1_percent'], label='ENG 1 Sim Commended N1', color="green")
     # axes[i].plot(time, fdr['athr.data.engine_N1_1_percent'], label='ENG 1 N1%', color="blue")
     axes[i].plot(time, fdr['engine.engineEngine1N1'], label='ENG 1 N1', color="red")
     axes[i].grid(True)
@@ -747,12 +772,23 @@ def draw_thrust_graph(fdr):
 
     # ==================================================================================================================
     # ENG 2
-    axes[i].plot(time, fdr['athr.output.N1_c_2_percent'], label='ENG 2 N1c', color="orange")
-    axes[i].plot(time, fdr['athr.data.commanded_engine_N1_2_percent'], label='ENG 2 N1cc', color="green")
+    axes[i].plot(time, fdr['athr.output.N1_TLA_2_percent'], label='TLA N1 2 % Right', color="black")
+    axes[i].plot(time, fdr['athr.output.N1_c_2_percent'], label='ENG 2 Commanded N1', color="orange")
+    axes[i].plot(time, fdr['athr.data.commanded_engine_N1_2_percent'], label='ENG 2 Sim Commended N1', color="green")
     # axes[i].plot(time, fdr['athr.data.engine_N1_2_percent'], label='ENG 2 N1%', color="blue")
     axes[i].plot(time, fdr['engine.engineEngine2N1'], label='ENG 2 N1', color="red")
     axes[i].grid(True)
     axes[i].set_ylim(-10, 110)
+    axes[i].legend()
+    mplcursors.cursor(axes[i], multiple=True)
+    i += 1
+
+    # flaps
+    axes[i].plot(time, fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index', color="orange")
+    axes[i].plot(time, fdr['athr.output.is_in_reverse_1'], label='ENG 1 REV', color="red")
+    axes[i].plot(time, fdr['athr.output.is_in_reverse_2'], label='ENG 2 REV', color="blue")
+    axes[i].grid(True)
+    axes[i].set_ylim(-0.1, 5.5)
     axes[i].legend()
     mplcursors.cursor(axes[i], multiple=True)
     i += 1
@@ -767,7 +803,7 @@ def draw_thrust_graph(fdr):
         hspace=0.2
     )
     # set title
-    figure.suptitle("FDR Analysis - Autopilot Deactivation")
+    figure.suptitle("FDR Analysis - Thrust")
     # window size
     figure.set_size_inches(16, 12)
     # maximize window
@@ -1272,7 +1308,6 @@ def draw_ath_graph(fdr):
 
     # show it
     plt.show()
-
 
 
 if __name__ == "__main__":
