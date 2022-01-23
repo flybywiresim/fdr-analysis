@@ -495,7 +495,7 @@ def draw_input_graph(fdr):
     # get simulation time
     time = fdr['fbw.sim.time.simulation_time']
     # create figure with subplots
-    figure, axes = plt.subplots(10, sharex=True)
+    figure, axes = plt.subplots(11, sharex=True)
     i = 0
 
     # aircraft position, speed and direction
@@ -552,8 +552,14 @@ def draw_input_graph(fdr):
     axes[i].legend()
     i += 1
     # brakes
+    axes[i].plot(time, fdr['fbw.output.xi_pos'], label='Aileron', color="red")
+    axes[i].grid(True)
+    axes[i].set_ylim(-1, 1)
+    axes[i].legend()
+    i += 1
+    # brakes
     axes[i].plot(time, fdr['data.brake_pedal_left_pos'], label='Brake Pedal Pos Left', color="red")
-    axes[i].plot(time, fdr['data.brake_pedal_right_pos'], label='Rake Pedal Right Pos', color="blue")
+    axes[i].plot(time, fdr['data.brake_pedal_right_pos'], label='Brake Pedal Right Pos', color="blue")
     axes[i].grid(True)
     axes[i].set_ylim(-0.1, 110)
     axes[i].legend()
