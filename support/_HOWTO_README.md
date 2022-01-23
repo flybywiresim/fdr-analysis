@@ -49,6 +49,12 @@ optional arguments:
 
 If you already have a CSV file you can directly choose this into the CSV File chooser and analyse it.
 
+**WARNING:** 
+
+Some graphs are only working with the latest version (v17+) of the fdr format. 
+If the app crashes when using it on older version (e.g. Stable uses v10) then 
+the required data for this graph is not available in this fdr version.
+
 ## FDR Files in WORK Folder
 
 FDR data files are stored in the aircraft's work folder. 
