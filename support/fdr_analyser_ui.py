@@ -8,7 +8,7 @@ import gmplot
 import matplotlib.pyplot as plt
 import mplcursors
 import pandas as pd
-from past.builtins import raw_input
+# from past.builtins import raw_input
 import PySimpleGUI as sg
 
 
@@ -129,8 +129,7 @@ def userinterface_commandline(args):
                        'Enter 8 for Thrust Chart\n'
                        'Enter 0 to Exit\n'
                        'Choice: ')
-        choice1 = raw_input(menu_choice)
-        choice = int(choice1)
+        choice = int(input(menu_choice))
         if choice == 1:
             print("Map")
             draw_map_graph(fdr)
