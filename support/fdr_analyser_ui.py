@@ -376,13 +376,13 @@ def draw_map_graph(fdr):
 
 def draw_ap_graph(fdr):
     # get simulation time
-    time = fdr['fbw.sim.time.simulation_time']
+    time = fdr['ap_sm.time.simulation_time']
     # create figure with subplots
     figure, axes = plt.subplots(9, sharex=True)
     i = 0
 
     # aircraft position, speed and direction
-    axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.H_ft'], label='Altitude ft', color="red")
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
     axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
@@ -391,49 +391,48 @@ def draw_ap_graph(fdr):
     axes[i].legend()
     i += 1
     # weights
-    axes[i].plot(time, fdr['fbw.sim.data.total_weight_kg'], label='GW', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.total_weight_kg'], label='GW', color="red")
     axes[i].grid(True)
     axes[i].set_ylim(40000, 80000)
     axes[i].legend()
     i += 1
     # temp
-    axes[i].plot(time, fdr['fbw.sim.data.ambient_wind_velocity_kn'], label='Wind kt', color="cyan")
-    axes[i].plot(time, fdr['fbw.sim.data.total_air_temperature_celsius'], label='TAT', color="red")
+    axes[i].plot(time, fdr['data.ambient_wind_velocity_kn'], label='Wind kt', color="cyan")
+    axes[i].plot(time, fdr['data.total_air_temperature_celsius'], label='TAT', color="red")
     axes[i].plot(time, fdr['athr.data.ISA_degC'], label='ISA', color="blue")
     axes[i].plot(time, fdr['athr.data.OAT_degC'], label='OAT', color="green")
-    axes[i].plot(time, fdr['fbw.sim.data.ice_structure_percent'], label='ICE', color="magenta")
-    axes[i].plot(time, fdr['fbw.sim.data.ambient_pressure_mbar'] / 10, label='Ambient Pressure mBar (*10)',
-                 color="orange")
+    axes[i].plot(time, fdr['data.ice_structure_percent'], label='ICE', color="magenta")
+    axes[i].plot(time, fdr['data.ambient_pressure_mbar'] / 10, label='Ambient Pressure mBar (*10)', color="orange")
     axes[i].grid(True)
     axes[i].set_ylim(-70, 150)
     axes[i].legend()
     i += 1
     # throttle
-    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
-    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="blue")
-    axes[i].plot(time, 5 * fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index (/10)', color="green")
+    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_1_pos'], label='Throttle Left', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].plot(time, 5 * fdr['ap_sm.data.flaps_handle_index'], label='Flaps Lever Index (/10)', color="green")
     axes[i].grid(True)
     axes[i].set_ylim(-20, 50)
     axes[i].legend()
     i += 1
     # spoilers
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
+    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
     axes[i].grid(True)
     axes[i].set_ylim(-1, 1)
     axes[i].legend()
     i += 1
     # attitude
-    axes[i].plot(time, fdr['fbw.sim.data.Theta_deg'], label='Pitch', color="black")
-    axes[i].plot(time, fdr['fbw.sim.data.Phi_deg'], label='Roll', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.Theta_deg'], label='Pitch', color="black")
+    axes[i].plot(time, fdr['ap_sm.data.Phi_deg'], label='Roll', color="red")
     axes[i].grid(True)
     axes[i].set_ylim(-60, 60)
     axes[i].legend()
     i += 1
     # Elevator, Ailerons, Rudder
-    axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
-    axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
-    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
+    axes[i].plot(time, fdr['data.inputElevator'], label='Elevator Input', color="black")
+    axes[i].plot(time, fdr['data.inputAileron'], label='Aileron Input', color="red")
+    axes[i].plot(time, fdr['data.inputRudder'], label='Rudder Input', color="green")
     axes[i].fill_between(time, -1.0, -0.5, alpha=0.1, color='red')
     axes[i].fill_between(time, -0.5, -0.4, alpha=0.1, color='yellow')
     axes[i].fill_between(time, -0.5, 0.5, alpha=0.1, color='green')
@@ -444,26 +443,24 @@ def draw_ap_graph(fdr):
     axes[i].legend()
     i += 1
     # AP
-    axes[i].plot(time, fdr['fbw.sim.data.autopilot_custom_on'], label='Autopilot On', color="lightblue", linewidth=1.0)
-    axes[i].fill_between(time, fdr['fbw.sim.data.autopilot_custom_on'], color="lightblue")
+    axes[i].plot(time, fdr['ap_law.ap_on'], label='Autopilot On', color="lightblue", linewidth=1.0)
+    axes[i].fill_between(time, fdr['ap_law.ap_on'], color="lightblue")
     axes[i].plot(time, fdr['ap_sm.input.AP_1_push'], label='AP1 Push', linewidth=2.0, color="blue")
     axes[i].plot(time, fdr['ap_sm.input.AP_2_push'], label='AP2 Push', linewidth=2.0, color="green")
     axes[i].plot(time, fdr['ap_sm.input.AP_DISCONNECT_push'], label='AP Disconnect', linewidth=2.0, color="black")
-    axes[i].plot(time, fdr['fbw.sim.data_computed.high_aoa_prot_active'],
-                 label='High-AoA', linewidth=5.0, color="orange")
-    axes[i].plot(time, fdr['fbw.sim.data_computed.alpha_floor_command'],
-                 label='A.FLOOR', linewidth=5.0, color="magenta")
+    axes[i].plot(time, fdr['data.protection_ap_disc'], label='High-AoA', linewidth=5.0, color="orange")
+    axes[i].plot(time, fdr['data.alpha_floor_command'], label='A.FLOOR', linewidth=5.0, color="magenta")
     axes[i].grid(False)
     axes[i].set_ylim(0, 1)
     axes[i].legend()
     i += 1
     # axis sim rate
-    axes[i].plot(time, fdr['fbw.sim.data.simulation_rate'], label='Sim Rate', color="blue", linewidth=3.0)
-    axes[i].plot(time, fdr['fbw.sim.data.simulation_rate'] / fdr['fbw.sim.time.dt'], label='FPS', color="red")
+    axes[i].plot(time, fdr['data.simulation_rate'], label='Sim Rate', color="blue", linewidth=3.0)
+    axes[i].plot(time, fdr['data.simulation_rate'] / fdr['ap_sm.time.dt'], label='FPS', color="red")
     axes[i].plot(time, 63 * fdr['ap_sm.input.FDR_event'], label='FDR Event', color="orange", linewidth=3.0)
     axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="orange")
-    axes[i].plot(time, 63 * fdr['fbw.sim.data.pause_on'], label='Pause On', color="brown", linewidth=3.0)
-    axes[i].fill_between(time, fdr['fbw.sim.data.pause_on'], color="brown")
+    # axes[i].plot(time, 63 * fdr['fbw.sim.data.pause_on'], label='Pause On', color="brown", linewidth=3.0)
+    # axes[i].fill_between(time, fdr['fbw.sim.data.pause_on'], color="brown")
     axes[i].grid(True)
     axes[i].set_ylim(0, 64)
     axes[i].legend()
@@ -492,13 +489,13 @@ def draw_ap_graph(fdr):
 
 def draw_input_graph(fdr):
     # get simulation time
-    time = fdr['fbw.sim.time.simulation_time']
+    time = fdr['ap_sm.time.simulation_time']
     # create figure with subplots
     figure, axes = plt.subplots(11, sharex=True)
     i = 0
 
     # aircraft position, speed and direction
-    axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.H_ft'], label='Altitude ft', color="red")
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
     axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
@@ -507,8 +504,8 @@ def draw_input_graph(fdr):
     axes[i].legend()
     i += 1
     # throttle
-    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_1_pos'], label='Throttle Left', color="red")
-    axes[i].plot(time, fdr['fbw.sim.data.thrust_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_1_pos'], label='Throttle Left', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_2_pos'], label='Throttle Right', color="blue")
     axes[i].plot(time, fdr['engine.engineEngine1N1'], label='ENG 1 N1', color="cyan")
     axes[i].plot(time, fdr['engine.engineEngine2N1'], label='ENG 2 N1', color="green")
     axes[i].grid(True)
@@ -523,24 +520,24 @@ def draw_input_graph(fdr):
     axes[i].legend()
     i += 1
     # flaps
-    axes[i].plot(time, fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.flaps_handle_index'], label='Flaps Lever Index', color="red")
     axes[i].grid(True)
     axes[i].set_ylim(-0.1, 5.5)
     axes[i].legend()
     i += 1
     # spoilers
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
-    axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
-    axes[i].plot(time, fdr['data.spoilers_armed'], label='Spoiler Armed', color="green")
     axes[i].plot(time, fdr['data.spoilers_handle_pos'], label='Spoiler Handle Pos', color="orange")
+    axes[i].plot(time, fdr['data.spoilers_armed'], label='Spoiler Armed', color="green")
+    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
+    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
     axes[i].grid(True)
     axes[i].set_ylim(-0.1, 1.1)
     axes[i].legend()
     i += 1
     # Elevator, Ailerons
-    axes[i].plot(time, fdr['fbw.sim.input.delta_eta_pos'], label='Elevator Input', color="black")
-    axes[i].plot(time, fdr['fbw.sim.input.delta_xi_pos'], label='Aileron Input', color="red")
-    axes[i].plot(time, fdr['fbw.sim.input.delta_zeta_pos'], label='Rudder Input', color="green")
+    axes[i].plot(time, fdr['data.inputElevator'], label='Elevator Input', color="black")
+    axes[i].plot(time, fdr['data.inputAileron'], label='Aileron Input', color="red")
+    axes[i].plot(time, fdr['data.inputRudder'], label='Rudder Input', color="green")
     axes[i].fill_between(time, -1.0, -0.5, alpha=0.1, color='red')
     axes[i].fill_between(time, -0.5, -0.4, alpha=0.1, color='yellow')
     axes[i].fill_between(time, -0.5, 0.5, alpha=0.1, color='green')
@@ -548,12 +545,6 @@ def draw_input_graph(fdr):
     axes[i].fill_between(time, 0.5, 1.0, alpha=0.1, color='red')
     axes[i].grid(True)
     axes[i].set_ylim(-1.1, +1.1)
-    axes[i].legend()
-    i += 1
-    # brakes
-    axes[i].plot(time, fdr['fbw.output.xi_pos'], label='Aileron', color="red")
-    axes[i].grid(True)
-    axes[i].set_ylim(-1, 1)
     axes[i].legend()
     i += 1
     # brakes
@@ -614,11 +605,11 @@ def draw_input_graph(fdr):
 # N1_c_1_percent = Target N1 for engines (through manual thrust or ATHR)
 # commanded_engine_N1_1_percent = expected N1 on basis of STLA
 # engineEngine1N1 = current N1 from engine model (e.g. correct at start ig sein, where sim value is not correct)
-# athr.input.TLA_1_deg = fbw.sim.data.thrust_lever_1_pos
+# athr.input.TLA_1_deg = fbw.sim.data.thrust_lever_1_pos ==> ap_sm.data.throttle_lever_1_pos???
 #
 def draw_thrust_graph(fdr):
     # get simulation time
-    time = fdr['fbw.sim.time.simulation_time']
+    time = fdr['ap_sm.time.simulation_time']
     # support math text
     plt.rcParams.update({'mathtext.default': 'regular'})
     # create figure with subplots
@@ -628,7 +619,7 @@ def draw_thrust_graph(fdr):
 
     # ==================================================================================================================
     # aircraft position, speed and direction
-    axes[i].plot(time, fdr['fbw.sim.data.H_ft'], label='Altitude ft', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.H_ft'], label='Altitude ft', color="red")
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
     axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
@@ -789,7 +780,7 @@ def draw_thrust_graph(fdr):
     i += 1
 
     # flaps
-    axes[i].plot(time, fdr['fbw.sim.data.flaps_handle_index'], label='Flaps Lever Index', color="orange")
+    axes[i].plot(time, fdr['ap_sm.data.flaps_handle_index'], label='Flaps Lever Index', color="orange")
     axes[i].plot(time, fdr['athr.output.is_in_reverse_1'], label='ENG 1 REV', color="red")
     axes[i].plot(time, fdr['athr.output.is_in_reverse_2'], label='ENG 2 REV', color="blue")
     axes[i].grid(True)
@@ -820,7 +811,7 @@ def draw_thrust_graph(fdr):
 
 def draw_aoa_graph(fdr):
     # get simulation time
-    time = fdr['fbw.sim.time.simulation_time']
+    time = fdr['ap_sm.time.simulation_time']
 
     # support math text
     plt.rcParams.update({'mathtext.default': 'regular'})
@@ -830,26 +821,28 @@ def draw_aoa_graph(fdr):
 
     # axis 1
     ax1 = axes[0]
-    ax1.plot(time, fdr['fbw.sim.input.delta_eta_pos'], label=r'$\delta\eta$ (Elevator Input)')
+    # ax1.plot(time, fdr['fbw.sim.input.delta_eta_pos'], label=r'$\delta\eta$ (Elevator Input)')
     ax1.grid(True)
     ax1.set_ylim(-1, +1)
     ax1.legend()
 
     # axis 2
     ax2 = axes[1]
-    ax2.plot(time, fdr['fbw.sim.data.alpha_deg'], label=r'$\alpha$')
-    ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_filtered_deg'], label=r'$\alpha_{filtered}$')
-    ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_prot_deg'], label=r'$\alpha_{prot}$')
-    ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_floor_deg'], label=r'$\alpha_{floor}$')
-    ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_max_deg'], label=r'$\alpha_{max}$')
+    ax2.plot(time, fdr['ap_sm.data.alpha_deg'], label=r'$\alpha$')
+    # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_filtered_deg'], label=r'$\alpha_{filtered}$')
+    # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_prot_deg'], label=r'$\alpha_{prot}$')
+    # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_floor_deg'], label=r'$\alpha_{floor}$')
+    # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_max_deg'], label=r'$\alpha_{max}$')
+    ax2.plot(time, fdr['data.v_alpha_prot_kn'], label=r'$\alpha_{prot}$')
+    ax2.plot(time, fdr['data.v_alpha_max_kn'], label=r'$\alpha_{max}$')
     ax2.grid(True)
     ax2.set_ylim(-5, 20)
     ax2.legend()
 
     # axis 3
     ax3 = axes[2]
-    ax3.plot(time, fdr['fbw.sim.data.Theta_deg'], label=r'$\Theta$ (Pitch)')
-    ax3.plot(time, fdr['fbw.sim.data.eta_deg'], label=r'$\eta$ (Elevator)')
+    ax3.plot(time, fdr['ap_sm.data.Theta_deg'], label=r'$\Theta$ (Pitch)')
+    ax3.plot(time, fdr['data.inputElevator'], label=r'$\eta$ (Elevator)')
     ax3.grid(True)
     ax3.set_ylim(-33, 33)
     ax3.legend()
@@ -864,8 +857,8 @@ def draw_aoa_graph(fdr):
 
     # axis 5
     ax5 = axes[4]
-    ax5.plot(time, fdr['fbw.sim.data_computed.high_aoa_prot_active'], label='high_aoa_prot_active')
-    ax5.plot(time, fdr['fbw.sim.data_computed.alpha_floor_command'], label='alpha_floor_command')
+    # ax5.plot(time, fdr['data.protection_ap_disc'], label='high_aoa_prot_active')
+    # ax5.plot(time, fdr['data.alpha_floor_command'], label='alpha_floor_command')
     ax5.grid(True)
     ax5.set_ylim(-0.1, 1.1)
     ax5.legend()
@@ -903,7 +896,7 @@ def draw_aoa_graph(fdr):
 
 def draw_ap_lateral_graph(fdr):
     # get simulation time
-    time = fdr['fbw.sim.time.simulation_time']
+    time = fdr['ap_sm.time.simulation_time']
 
     # define enums
     class LateralMode(Enum):
@@ -1019,7 +1012,7 @@ def draw_ap_lateral_graph(fdr):
 
 def draw_ap_vertical_graph(fdr):
     # get simulation time
-    time = fdr['fbw.sim.time.simulation_time']
+    time = fdr['ap_sm.time.simulation_time']
 
     # define enums
     class VerticalMode(Enum):
@@ -1151,7 +1144,7 @@ def draw_ap_vertical_graph(fdr):
 
 def draw_ath_graph(fdr):
     # get simulation time
-    time = fdr['fbw.sim.time.simulation_time']
+    time = fdr['ap_sm.time.simulation_time']
 
     # define enums
     class AutothrustRequestedMode(Enum):
