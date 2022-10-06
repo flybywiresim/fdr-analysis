@@ -457,6 +457,7 @@ def draw_ap_graph(fdr):
     # axis sim rate
     axes[i].plot(time, fdr['data.simulation_rate'], label='Sim Rate', color="blue", linewidth=3.0)
     axes[i].plot(time, fdr['data.simulation_rate'] / fdr['ap_sm.time.dt'], label='FPS', color="red")
+    axes[i].plot(time, 63 * fdr['data.failuresActive'], label='Failure Active', color="black", linewidth=3.0)
     axes[i].plot(time, 63 * fdr['ap_sm.input.FDR_event'], label='FDR Event', color="orange", linewidth=3.0)
     axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="orange")
     # axes[i].plot(time, 63 * fdr['fbw.sim.data.pause_on'], label='Pause On', color="brown", linewidth=3.0)
