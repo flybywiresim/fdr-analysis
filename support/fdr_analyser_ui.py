@@ -415,13 +415,6 @@ def draw_ap_graph(fdr):
     axes[i].set_ylim(-20, 50)
     axes[i].legend()
     i += 1
-    # spoilers
-    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_left_pos'], label='Spoiler Left', color="red")
-    # axes[i].plot(time, fdr['fbw.sim.data.spoilers_right_pos'], label='Spoiler Right', color="blue")
-    axes[i].grid(True)
-    axes[i].set_ylim(-1, 1)
-    axes[i].legend()
-    i += 1
     # attitude
     axes[i].plot(time, fdr['ap_sm.data.Theta_deg'], label='Pitch', color="black")
     axes[i].plot(time, fdr['ap_sm.data.Phi_deg'], label='Roll', color="red")
@@ -454,14 +447,21 @@ def draw_ap_graph(fdr):
     axes[i].set_ylim(0, 1)
     axes[i].legend()
     i += 1
+    # sim state
+    axes[i].plot(time, fdr['data.failuresActive'], label='Failure Active', color="red", linewidth=3.0)
+    axes[i].plot(time, fdr['data.wasPaused'], label='Pause Was On', color="green", linewidth=3.0)
+    axes[i].plot(time, fdr['data.slew_on'], label='Slew On', color="blue", linewidth=3.0)
+    axes[i].plot(time, fdr['ap_sm.input.FDR_event'], label='FDR Event', color="orange", linewidth=3.0)
+    # axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="orange")
+    # axes[i].plot(time, 63 * fdr['fbw.sim.data.pause_on'], label='Pause On', color="brown", linewidth=3.0)
+    # axes[i].fill_between(time, fdr['fbw.sim.data.pause_on'], color="brown")
+    axes[i].grid(True)
+    axes[i].set_ylim(0, 1.1)
+    axes[i].legend()
+    i += 1
     # axis sim rate
     axes[i].plot(time, fdr['data.simulation_rate'], label='Sim Rate', color="blue", linewidth=3.0)
     axes[i].plot(time, fdr['data.simulation_rate'] / fdr['ap_sm.time.dt'], label='FPS', color="red")
-    axes[i].plot(time, 63 * fdr['data.failuresActive'], label='Failure Active', color="black", linewidth=3.0)
-    axes[i].plot(time, 63 * fdr['ap_sm.input.FDR_event'], label='FDR Event', color="orange", linewidth=3.0)
-    axes[i].fill_between(time, fdr['ap_sm.input.FDR_event'], color="orange")
-    # axes[i].plot(time, 63 * fdr['fbw.sim.data.pause_on'], label='Pause On', color="brown", linewidth=3.0)
-    # axes[i].fill_between(time, fdr['fbw.sim.data.pause_on'], color="brown")
     axes[i].grid(True)
     axes[i].set_ylim(0, 64)
     axes[i].legend()
