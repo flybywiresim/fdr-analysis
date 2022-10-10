@@ -402,9 +402,9 @@ def draw_ap_graph(fdr):
     axes[i].plot(time, fdr['athr.data.ISA_degC'], label='ISA', color="blue")
     axes[i].plot(time, fdr['athr.data.OAT_degC'], label='OAT', color="green")
     axes[i].plot(time, fdr['data.ice_structure_percent'], label='ICE', color="magenta")
-    axes[i].plot(time, fdr['data.ambient_pressure_mbar'] / 10, label='Ambient Pressure mBar (*10)', color="orange")
+    axes[i].plot(time, fdr['data.ambient_pressure_mbar'] - 1000, label='Ambient Pressure mBar (-1000)', color="orange")
     axes[i].grid(True)
-    axes[i].set_ylim(-70, 150)
+    axes[i].set_ylim(-100, 150)
     axes[i].legend()
     i += 1
     # throttle
