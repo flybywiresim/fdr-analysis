@@ -378,7 +378,7 @@ def draw_ap_graph(fdr):
     # get simulation time
     time = fdr['ap_sm.time.simulation_time']
     # create figure with subplots
-    figure, axes = plt.subplots(9, sharex=True)
+    figure, axes = plt.subplots(8, sharex=True)
     i = 0
 
     # aircraft position, speed and direction
@@ -386,23 +386,18 @@ def draw_ap_graph(fdr):
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_gnd_kn'], label='Ground Speed (/100)', color="blue")
     axes[i].plot(time, 100 * fdr['ap_sm.data.V_ias_kn'], label='IAS Speed (/100)', color="cyan")
     axes[i].plot(time, 100 * fdr['ap_sm.data.Psi_magnetic_deg'], label='Track (/100)', color="green")
+    axes[i].plot(time, fdr['ap_sm.data.total_weight_kg'], label='GW', color="orange")
     axes[i].grid(True)
-    axes[i].set_ylim(0, 45000)
-    axes[i].legend()
-    i += 1
-    # weights
-    axes[i].plot(time, fdr['ap_sm.data.total_weight_kg'], label='GW', color="red")
-    axes[i].grid(True)
-    axes[i].set_ylim(40000, 80000)
+    axes[i].set_ylim(0, 80000)
     axes[i].legend()
     i += 1
     # temp
     axes[i].plot(time, fdr['data.ambient_wind_velocity_kn'], label='Wind kt', color="cyan")
+    axes[i].plot(time, fdr['data.ambient_pressure_mbar'] / 10, label='Ambient Pressure mBar (*10)', color="orange")
     axes[i].plot(time, fdr['data.total_air_temperature_celsius'], label='TAT', color="red")
     axes[i].plot(time, fdr['athr.data.ISA_degC'], label='ISA', color="blue")
     axes[i].plot(time, fdr['athr.data.OAT_degC'], label='OAT', color="green")
     axes[i].plot(time, fdr['data.ice_structure_percent'], label='ICE', color="magenta")
-    axes[i].plot(time, fdr['data.ambient_pressure_mbar'] - 1000, label='Ambient Pressure mBar (-1000)', color="orange")
     axes[i].grid(True)
     axes[i].set_ylim(-100, 150)
     axes[i].legend()
@@ -466,7 +461,7 @@ def draw_ap_graph(fdr):
 
     # configure distances
     figure.subplots_adjust(
-        left=0.03,
+        left=0.05,
         bottom=0.02,
         right=0.98,
         top=0.95,
