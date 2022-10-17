@@ -90,9 +90,9 @@ def single_command(args):
     elif args.command[0] == 'ap':
         print("AP Disconnect Chart")
         draw_ap_graph(fdr)
-    elif args.command[0] == 'aoa':
-        print("Angle of Attack Chart")
-        draw_aoa_graph(fdr)
+    # elif args.command[0] == 'aoa':
+    #     print("Angle of Attack Chart")
+    #     draw_aoa_graph(fdr)
     elif args.command[0] == 'apl':
         print("AP Lateral Chart")
         draw_ap_lateral_graph(fdr)
@@ -121,7 +121,7 @@ def userinterface_commandline(args):
     while True:  # use while True
         menu_choice = ('Enter 1 for Route Map\n'
                        'Enter 2 for AP Disconnect Chart\n'
-                       'Enter 3 for Angle of Attack (AoA) Chart\n'
+                       # 'Enter 3 for Angle of Attack (AoA) Chart\n'
                        'Enter 4 for AP Lateral Chart\n'
                        'Enter 5 for AP Vertical Chart\n'
                        'Enter 6 for A/THR Chart\n'
@@ -136,9 +136,9 @@ def userinterface_commandline(args):
         elif choice == 2:
             print("AP Disconnect Chart")
             draw_ap_graph(fdr)
-        elif choice == 3:
-            print("Angle of Attack Chart")
-            draw_aoa_graph(fdr)
+        # elif choice == 3:
+        #     print("Angle of Attack Chart")
+        #     draw_aoa_graph(fdr)
         elif choice == 4:
             print("AP Lateral Chart")
             draw_ap_lateral_graph(fdr)
@@ -197,7 +197,7 @@ def userinterface_windows(args):
               [sg.Button('Autopilot Disconnect Analysis', key='__ANALYZE_AP__', disabled=True)],
               [sg.Button('Controller Inputs Analysis', key='__ANALYZE_INPUTS__', disabled=True)],
               [sg.Button('Thrust Analysis', key='__ANALYZE_THRUST__', disabled=True)],
-              [sg.Button('Angle of Attack (AoA) Analysis', key='__ANALYZE_AOA__', disabled=True)],
+              # [sg.Button('Angle of Attack (AoA) Analysis', key='__ANALYZE_AOA__', disabled=True)],
               [sg.Button('Autopilot Lateral Mode Analysis', key='__ANALYZE_APL__', disabled=True)],
               [sg.Button('Autopilot Vertical Mode Analysis', key='__ANALYZE_APV__', disabled=True)],
               [sg.Button('Autothrust Analysis', key='__ANALYZE_ATHR__', disabled=True)],
@@ -240,7 +240,7 @@ def userinterface_windows(args):
         if os.path.isfile(values.get('csvfile')):
             window['__ANALYZE_MAP__'].update(disabled=False)
             window['__ANALYZE_AP__'].update(disabled=False)
-            window['__ANALYZE_AOA__'].update(disabled=False)
+            # window['__ANALYZE_AOA__'].update(disabled=False)
             window['__ANALYZE_APV__'].update(disabled=False)
             window['__ANALYZE_APL__'].update(disabled=False)
             window['__ANALYZE_ATHR__'].update(disabled=False)
@@ -249,7 +249,7 @@ def userinterface_windows(args):
         else:
             window['__ANALYZE_MAP__'].update(disabled=True)
             window['__ANALYZE_AP__'].update(disabled=True)
-            window['__ANALYZE_AOA__'].update(disabled=True)
+            # window['__ANALYZE_AOA__'].update(disabled=True)
             window['__ANALYZE_APV__'].update(disabled=True)
             window['__ANALYZE_APL__'].update(disabled=True)
             window['__ANALYZE_ATHR__'].update(disabled=True)
@@ -289,9 +289,9 @@ def userinterface_windows(args):
             elif event == '__ANALYZE_AP__':
                 print("AP Disconnect Chart: " + values.get('csvfile'))
                 draw_ap_graph(pd.read_csv(values.get('csvfile')))
-            elif event == '__ANALYZE_AOA__':
-                print("Angle of Attack Chart: " + values.get('csvfile'))
-                draw_aoa_graph(pd.read_csv(values.get('csvfile')))
+            # elif event == '__ANALYZE_AOA__':
+            #     print("Angle of Attack Chart: " + values.get('csvfile'))
+            #     draw_aoa_graph(pd.read_csv(values.get('csvfile')))
             elif event == '__ANALYZE_APL__':
                 print("AP Lateral Chart: " + values.get('csvfile'))
                 draw_ap_lateral_graph(pd.read_csv(values.get('csvfile')))
@@ -799,90 +799,90 @@ def draw_thrust_graph(fdr):
     # mplcursors.cursor()
     plt.show()
 
-
-def draw_aoa_graph(fdr):
-    # get simulation time
-    time = fdr['ap_sm.time.simulation_time']
-
-    # support math text
-    plt.rcParams.update({'mathtext.default': 'regular'})
-
-    # create figure with subplots
-    figure, axes = plt.subplots(5, sharex=True)
-
-    # axis 1
-    ax1 = axes[0]
-    # ax1.plot(time, fdr['fbw.sim.input.delta_eta_pos'], label=r'$\delta\eta$ (Elevator Input)')
-    ax1.grid(True)
-    ax1.set_ylim(-1, +1)
-    ax1.legend()
-
-    # axis 2
-    ax2 = axes[1]
-    ax2.plot(time, fdr['ap_sm.data.alpha_deg'], label=r'$\alpha$')
-    # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_filtered_deg'], label=r'$\alpha_{filtered}$')
-    # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_prot_deg'], label=r'$\alpha_{prot}$')
-    # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_floor_deg'], label=r'$\alpha_{floor}$')
-    # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_max_deg'], label=r'$\alpha_{max}$')
-    ax2.plot(time, fdr['data.v_alpha_prot_kn'], label=r'$\alpha_{prot}$')
-    ax2.plot(time, fdr['data.v_alpha_max_kn'], label=r'$\alpha_{max}$')
-    ax2.grid(True)
-    ax2.set_ylim(-5, 20)
-    ax2.legend()
-
-    # axis 3
-    ax3 = axes[2]
-    ax3.plot(time, fdr['ap_sm.data.Theta_deg'], label=r'$\Theta$ (Pitch)')
-    ax3.plot(time, fdr['data.inputElevator'], label=r'$\eta$ (Elevator)')
-    ax3.grid(True)
-    ax3.set_ylim(-33, 33)
-    ax3.legend()
-
-    # axis 4
-    ax4 = axes[3]
-    ax4.plot(time, fdr['athr.data.engine_N1_1_percent'], label='1-N1')
-    ax4.plot(time, fdr['athr.data.engine_N1_2_percent'], label='2-N1')
-    ax4.grid(True)
-    ax4.set_ylim(0, 100)
-    ax4.legend()
-
-    # axis 5
-    ax5 = axes[4]
-    # ax5.plot(time, fdr['data.protection_ap_disc'], label='high_aoa_prot_active')
-    # ax5.plot(time, fdr['data.alpha_floor_command'], label='alpha_floor_command')
-    ax5.grid(True)
-    ax5.set_ylim(-0.1, 1.1)
-    ax5.legend()
-
-    # configure distances
-    figure.subplots_adjust(
-        left=0.03,
-        bottom=0.04,
-        right=0.99,
-        top=0.97,
-        wspace=0,
-        hspace=0.1
-    )
-
-    # set title
-    ax1.set_title("FDR Analysis - AoA")
-
-    # enable simple data cursor with label
-    mplcursors.cursor(multiple=True).connect(
-        "add",
-        lambda sel: sel.annotation.set(
-            text="{l:s}\n{y:.2f}\nt={x:.2f}".format(
-                l=sel.artist.get_label(), x=sel.target[0], y=sel.target[1]),
-            fontfamily='monospace',
-            ma="right"
-        )
-    )
-
-    # maximize window
-    plt.get_current_fig_manager().window.state('zoomed')
-
-    # show it
-    plt.show()
+# deactivated as the aoa data is no longer available in the FDR
+# def draw_aoa_graph(fdr):
+#     # get simulation time
+#     time = fdr['ap_sm.time.simulation_time']
+#
+#     # support math text
+#     plt.rcParams.update({'mathtext.default': 'regular'})
+#
+#     # create figure with subplots
+#     figure, axes = plt.subplots(5, sharex=True)
+#
+#     # axis 1
+#     ax1 = axes[0]
+#     # ax1.plot(time, fdr['fbw.sim.input.delta_eta_pos'], label=r'$\delta\eta$ (Elevator Input)')
+#     ax1.grid(True)
+#     ax1.set_ylim(-1, +1)
+#     ax1.legend()
+#
+#     # axis 2
+#     ax2 = axes[1]
+#     ax2.plot(time, fdr['ap_sm.data.alpha_deg'], label=r'$\alpha$')
+#     # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_filtered_deg'], label=r'$\alpha_{filtered}$')
+#     # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_prot_deg'], label=r'$\alpha_{prot}$')
+#     # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_floor_deg'], label=r'$\alpha_{floor}$')
+#     # ax2.plot(time, fdr['fbw.sim.data_speeds_aoa.alpha_max_deg'], label=r'$\alpha_{max}$')
+#     ax2.plot(time, fdr['data.v_alpha_prot_kn'], label=r'$\alpha_{prot}$')
+#     ax2.plot(time, fdr['data.v_alpha_max_kn'], label=r'$\alpha_{max}$')
+#     ax2.grid(True)
+#     ax2.set_ylim(-5, 20)
+#     ax2.legend()
+#
+#     # axis 3
+#     ax3 = axes[2]
+#     ax3.plot(time, fdr['ap_sm.data.Theta_deg'], label=r'$\Theta$ (Pitch)')
+#     ax3.plot(time, fdr['data.inputElevator'], label=r'$\eta$ (Elevator)')
+#     ax3.grid(True)
+#     ax3.set_ylim(-33, 33)
+#     ax3.legend()
+#
+#     # axis 4
+#     ax4 = axes[3]
+#     ax4.plot(time, fdr['athr.data.engine_N1_1_percent'], label='1-N1')
+#     ax4.plot(time, fdr['athr.data.engine_N1_2_percent'], label='2-N1')
+#     ax4.grid(True)
+#     ax4.set_ylim(0, 100)
+#     ax4.legend()
+#
+#     # axis 5
+#     ax5 = axes[4]
+#     # ax5.plot(time, fdr['data.protection_ap_disc'], label='high_aoa_prot_active')
+#     # ax5.plot(time, fdr['data.alpha_floor_command'], label='alpha_floor_command')
+#     ax5.grid(True)
+#     ax5.set_ylim(-0.1, 1.1)
+#     ax5.legend()
+#
+#     # configure distances
+#     figure.subplots_adjust(
+#         left=0.03,
+#         bottom=0.04,
+#         right=0.99,
+#         top=0.97,
+#         wspace=0,
+#         hspace=0.1
+#     )
+#
+#     # set title
+#     ax1.set_title("FDR Analysis - AoA")
+#
+#     # enable simple data cursor with label
+#     mplcursors.cursor(multiple=True).connect(
+#         "add",
+#         lambda sel: sel.annotation.set(
+#             text="{l:s}\n{y:.2f}\nt={x:.2f}".format(
+#                 l=sel.artist.get_label(), x=sel.target[0], y=sel.target[1]),
+#             fontfamily='monospace',
+#             ma="right"
+#         )
+#     )
+#
+#     # maximize window
+#     plt.get_current_fig_manager().window.state('zoomed')
+#
+#     # show it
+#     plt.show()
 
 
 def draw_ap_lateral_graph(fdr):
