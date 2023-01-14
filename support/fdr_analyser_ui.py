@@ -403,8 +403,8 @@ def draw_ap_graph(fdr):
     axes[i].legend()
     i += 1
     # throttle
-    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_1_pos'], label='Throttle Left', color="red")
-    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_1_pos'], label='Thrust Lever Left (°)', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_2_pos'], label='Thrust Lever Right (°)', color="blue")
     axes[i].plot(time, 5 * fdr['ap_sm.data.flaps_handle_index'], label='Flaps Lever Index (/10)', color="green")
     axes[i].grid(True)
     axes[i].set_ylim(-20, 50)
@@ -497,8 +497,8 @@ def draw_input_graph(fdr):
     axes[i].legend()
     i += 1
     # throttle
-    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_1_pos'], label='Throttle Left', color="red")
-    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_2_pos'], label='Throttle Right', color="blue")
+    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_1_pos'], label='Thrust Lever Left (°)', color="red")
+    axes[i].plot(time, fdr['ap_sm.data.throttle_lever_2_pos'], label='Thrust Lever Right (°)', color="blue")
     axes[i].plot(time, fdr['engine.engineEngine1N1'], label='ENG 1 N1', color="cyan")
     axes[i].plot(time, fdr['engine.engineEngine2N1'], label='ENG 2 N1', color="green")
     axes[i].grid(True)
