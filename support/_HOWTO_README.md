@@ -76,3 +76,16 @@ The work folder can be found here:
 The work folder can be found here:
 
 `%APPDATA%\Microsoft Flight Simulator\Packages\flybywire-aircraft-a320-neo\work\`
+
+## How to build the exe and zip:
+
+Exe:
+
+pip install pyinstaller
+
+`pyinstaller --onefile fdr_analyser_ui.py  --specpath build --distpath .`
+
+Zip:
+
+`zip -r9 support-fdr-package.zip fdr2csv/ fdr_analyser_ui.py fdr_analyser_ui.exe example.png _HOWTO_README.md`
+
