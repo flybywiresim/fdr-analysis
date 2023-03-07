@@ -7,7 +7,7 @@ The idea is taken from real aircraft and their flight data recorder and helps to
 To see which data is collected see `data_fields.txt` in the `docs` folder. 
 
 To learn how to configure the data collection see this folder on the main a32nx repository:
-https://github.com/flybywiresim/a32nx/tree/master/docs/Configuration
+https://github.com/flybywiresim/a32nx/tree/master/fbw-a32nx/docs/Configuration
 
 ## Folders
 
