@@ -12,7 +12,7 @@ https://github.com/flybywiresim/a32nx/tree/master/fbw-a32nx/docs/Configuration
 ## Folders
 
 - `/docs`: Documentation
-- `/fdr2csv`: Converter tool from *.fdr files to *.csv 
+- `/fdr2csv`: Converter tool from *.fdr files to *.csv. Source can be found [in the main A32NX repo](https://github.com/flybywiresim/aircraft/tree/master/tools/fdr2csv)
 - `/python`: Base scripts for development and debugging
 - `/support`: Scripts targeted mainly for support staff and user support. 
 
